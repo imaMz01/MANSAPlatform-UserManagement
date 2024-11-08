@@ -60,4 +60,14 @@ public class UserController {
         return new ResponseEntity<>("Logout successfully",HttpStatus.OK);
 
     }
+
+    @GetMapping("/generateEmailValidationToken/{id}")
+    public ResponseEntity<String> generateToken(@PathVariable String id){
+        return new ResponseEntity<>(userService.generateEmailVerificationToken(id),HttpStatus.OK);
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(@RequestParam(name = "token") String token){
+        return new ResponseEntity<>(userService.verifyEmail(token),HttpStatus.OK);
+    }
 }

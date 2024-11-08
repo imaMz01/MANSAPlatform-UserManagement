@@ -85,4 +85,13 @@ public class JwtTokenProvider {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
+    public String generateEmailVerificationToken(String id){
+        return Jwts.builder()
+                .setSubject(id)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()+3600000))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 }

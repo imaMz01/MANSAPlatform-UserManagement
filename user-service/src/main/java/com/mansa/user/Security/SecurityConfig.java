@@ -37,7 +37,9 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
+            "/api/users/register",
             "/api/users/login",
+            "/api/users/verify/**",
             "/api/users/logout"
     };
 

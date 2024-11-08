@@ -35,6 +35,7 @@ public class User implements UserDetails {
     private String password;
     private String address;
     private boolean enabled;
+    private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
 

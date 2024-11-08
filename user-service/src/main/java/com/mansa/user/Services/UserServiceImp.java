@@ -4,17 +4,22 @@ import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Entities.User;
-import com.mansa.user.Exceptions.EmailAlreadyExistException;
-import com.mansa.user.Exceptions.InvalidEmailOrPasswordException;
-import com.mansa.user.Exceptions.UserNotFoundException;
+import com.mansa.user.Exceptions.*;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +39,9 @@ public class UserServiceImp implements UserService{
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    @Value("${token.signing.key}")
+    private String secretKey;
+    private final JavaMailSender mailSender;
 
     @Override
     public UserDto add(UserDto userDto) {
@@ -45,6 +53,7 @@ public class UserServiceImp implements UserService{
         user.setCreated(LocalDateTime.now());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(false);
+        user.setEmailVerified(false);
         return UserMapper.userMapper.toDto(
                 userRepository.save(user)
         );
@@ -62,7 +71,6 @@ public class UserServiceImp implements UserService{
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAddress(userDto.getAddress());
-        user.setEnabled(userDto.isEnabled());
         user.setCreated(userDto.getCreated());
         user.setUpdated(LocalDateTime.now());
         return UserMapper.userMapper.toDto(
@@ -147,9 +155,55 @@ public class UserServiceImp implements UserService{
         }
     }
 
+    @Override
+    public String generateEmailVerificationToken(String id) {
+        String token= jwtTokenProvider.generateEmailVerificationToken(id);
+        sendVerificationEmail("test@yopmail.com",token);
+        return token;
+    }
+
+    @Override
+    public String verifyEmail(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String id = claims.getSubject();
+            User user = getUser(id);
+            if(user.isEmailVerified()){
+                throw new EmailAlreadyVerifiedException(user.getEmail());
+            }
+            user.setEmailVerified(true);
+            userRepository.save(user);
+            return "Email verified successfully.";
+        }catch (ExpiredJwtException e) {
+            System.out.println(e.getMessage());
+            throw new TokenExpiredException();
+        }  catch (JwtException e) {
+            log.info("error : {}",e.getMessage());
+            throw new TokenInvalidException();
+        }
+    }
+
     private User getUser(String id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(id)
         );
+    }
+
+    public void sendVerificationEmail(String toEmail, String token) {
+
+        String subject = "Email Verification";
+        String content = "Please click the following link to verify your email: "
+                + "http://localhost:8081/api/users/verify?token=" + token;
+
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo(toEmail);
+        email.setSubject(subject);
+        email.setText(content);
+
+        mailSender.send(email);
     }
 }

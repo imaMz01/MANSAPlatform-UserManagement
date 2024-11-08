@@ -38,6 +38,7 @@ public class UserDto {
     @NotEmpty(message = "Email should be not empty")
     private String address;
     private boolean enabled;
+    private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
 }
