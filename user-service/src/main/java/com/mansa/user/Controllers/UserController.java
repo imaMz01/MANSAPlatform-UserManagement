@@ -18,32 +18,32 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/users/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/admin/users")
     public ResponseEntity<List<UserDto>> all(){
         return new ResponseEntity<>(userService.all(),HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> userById(@PathVariable String id){
         return new ResponseEntity<>(userService.getById(id),HttpStatus.OK);
     }
 
-    @PutMapping("/me")
+    @PutMapping("/users/me")
     public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.update(userDto),HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/users/{id}/status")
     public ResponseEntity<UserDto> changeStatus(@PathVariable String id){
         return new ResponseEntity<>(userService.changeStatus(id),HttpStatus.OK);
     }
@@ -66,8 +66,13 @@ public class UserController {
         return new ResponseEntity<>(userService.generateEmailVerificationToken(id),HttpStatus.OK);
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyEmail(@RequestParam(name = "token") String token){
+    @GetMapping("/users/verify/{token}")
+    public ResponseEntity<String> verifyEmail(@PathVariable String token){
         return new ResponseEntity<>(userService.verifyEmail(token),HttpStatus.OK);
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<UserDto> getCurrentUser(){
+        return new ResponseEntity<>(userService.getCurrentUser(),HttpStatus.OK);
     }
 }

@@ -23,7 +23,7 @@ spring:
       routes[0]:
         id: user-service
         uri: lb://user-service
-        predicates[0]: Path=/api/users/**
+        predicates[0]: Path=/api/**
       routes[1]:
         id: subscription-service
         uri: lb://subscription-service

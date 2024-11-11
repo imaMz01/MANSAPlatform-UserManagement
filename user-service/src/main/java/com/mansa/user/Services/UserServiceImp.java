@@ -22,6 +22,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -197,7 +198,7 @@ public class UserServiceImp implements UserService{
 
         String subject = "Email Verification";
         String content = "Please click the following link to verify your email: "
-                + "http://localhost:8081/api/users/verify?token=" + token;
+                + "http://localhost:8081/api/users/verify/" + token;
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(toEmail);
@@ -205,5 +206,17 @@ public class UserServiceImp implements UserService{
         email.setText(content);
 
         mailSender.send(email);
+    }
+
+    @Override
+    public UserDto getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null){
+            Object principal = authentication.getPrincipal();
+            if(principal instanceof User){
+                return UserMapper.userMapper.toDto((User)principal);
+            }
+        }
+        return null;
     }
 }

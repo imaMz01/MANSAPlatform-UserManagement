@@ -19,5 +19,5 @@ public interface UserService {
     void logout(HttpServletRequest request, HttpServletResponse response);
     String generateEmailVerificationToken(String id);
     String verifyEmail(String token);
-
+    UserDto getCurrentUser();
 }

@@ -38,9 +38,9 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/users/register",
-            "/api/users/login",
+            "/api/login",
             "/api/users/verify/**",
-            "/api/users/logout"
+            "/api/logout"
     };
 
     private final UserRepository userRepository;
