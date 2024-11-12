@@ -25,17 +25,18 @@ spring:
         uri: lb://user-service
         predicates[0]: Path=/api/**
       routes[1]:
+        id: authorization-service
+        uri: lb://authorization-service
+        predicates[0]: Path=/authorization/**
+      routes[2]:
         id: subscription-service
         uri: lb://subscription-service
         predicates[0]: Path=/Order/**
-      routes[2]:
+      routes[3]:
         id: notification-service
         uri: lb://notification-service
         predicates[0]: Path=/**
-      routes[3]:
-        id: authorization-service
-        uri: lb://authorization-service
-        predicates[0]: Path=/**
+
 ##Inventory service route
 
 # Actuator route

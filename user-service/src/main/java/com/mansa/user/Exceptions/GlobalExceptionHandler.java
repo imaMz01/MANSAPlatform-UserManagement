@@ -13,6 +13,11 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<String> handleEmailNotVerified(EmailNotVerifiedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(TokenInvalidException.class)
     public ResponseEntity<String> handleTokenInvalid(TokenInvalidException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);

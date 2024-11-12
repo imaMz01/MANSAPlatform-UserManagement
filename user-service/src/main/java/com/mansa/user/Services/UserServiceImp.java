@@ -103,6 +103,11 @@ public class UserServiceImp implements UserService{
 
     @Override
     public JwtAuthenticationResponse signIn(SignInRequest request) {
+
+        // Find user by email
+        User user = userRepository.findByEmailIgnoreCase(request.getEmail())
+                .orElseThrow(InvalidEmailOrPasswordException::new);
+        if(!user.isEmailVerified()) throw new EmailNotVerifiedException();
         // Authenticate using email and password
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -110,9 +115,6 @@ public class UserServiceImp implements UserService{
                         request.getPassword()));
 
         log.info("User authenticated");
-        // Find user by email
-        User user = userRepository.findByEmailIgnoreCase(request.getEmail())
-                .orElseThrow(InvalidEmailOrPasswordException::new);
 
         log.info("User found: {}", user.getEmail());
         // Check if 2FA is enabled
@@ -159,7 +161,7 @@ public class UserServiceImp implements UserService{
     @Override
     public String generateEmailVerificationToken(String id) {
         String token= jwtTokenProvider.generateEmailVerificationToken(id);
-        sendVerificationEmail("test@yopmail.com",token);
+        sendVerificationEmail(getUser(id).getEmail(),token);
         return token;
     }
 
@@ -181,6 +183,8 @@ public class UserServiceImp implements UserService{
             return "Email verified successfully.";
         }catch (ExpiredJwtException e) {
             System.out.println(e.getMessage());
+            log.info("id is : {}",e.getClaims().getSubject());
+            generateEmailVerificationToken(e.getClaims().getSubject());
             throw new TokenExpiredException();
         }  catch (JwtException e) {
             log.info("error : {}",e.getMessage());

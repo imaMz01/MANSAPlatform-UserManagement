@@ -7,6 +7,7 @@ import com.mansa.user.Services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,11 @@ public class UserController {
 
     @PostMapping("/users/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
+        ResponseEntity<UserDto> response= new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
+        if(response.getStatusCode() == HttpStatus.CREATED){
+            userService.generateEmailVerificationToken(response.getBody().getId());
+        }
+        return response;
     }
 
     @GetMapping("/admin/users")
