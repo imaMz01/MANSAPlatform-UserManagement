@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -41,4 +42,5 @@ public class UserDto {
     private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private Set<String> role;
 }

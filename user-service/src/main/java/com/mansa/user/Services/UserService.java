@@ -20,4 +20,6 @@ public interface UserService {
     String generateEmailVerificationToken(String id);
     String verifyEmail(String token);
     UserDto getCurrentUser();
+    UserDto addAuthority(String id, String role);
+    UserDto removeAuthority(String id, String role);
 }

@@ -7,7 +7,6 @@ import com.mansa.user.Services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -79,5 +78,15 @@ public class UserController {
     @GetMapping("/users/me")
     public ResponseEntity<UserDto> getCurrentUser(){
         return new ResponseEntity<>(userService.getCurrentUser(),HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/addAuthority/{id}/{role}")
+    public ResponseEntity<UserDto> addAuthority(@PathVariable String id, @PathVariable String role){
+        return new ResponseEntity<>(userService.addAuthority(id,role),HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/removeAuthority/{id}/{role}")
+    public ResponseEntity<UserDto> removeAuthority(@PathVariable String id, @PathVariable String role){
+        return new ResponseEntity<>(userService.removeAuthority(id,role),HttpStatus.OK);
     }
 }

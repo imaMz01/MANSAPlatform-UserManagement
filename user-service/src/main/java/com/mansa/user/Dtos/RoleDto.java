@@ -1,7 +1,6 @@
-package com.mansa.authorization.Entity;
+package com.mansa.user.Dtos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +10,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Role {
+public class RoleDto {
 
-    @Id
     private String id;
     private String role;
-
 }

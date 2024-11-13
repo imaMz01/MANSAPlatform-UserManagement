@@ -1,5 +1,7 @@
 package com.mansa.user.Exceptions;
 
+import com.mansa.user.Dtos.ErrorResponse;
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +14,23 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    public ResponseEntity<ErrorResponse> handleFeignNotFound(FeignException.NotFound ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Role not found");
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RoleAlreadyExistException.class)
+    public ResponseEntity<String> handleRoleAlreadyExist(RoleAlreadyExistException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(FailedToFindService.class)
+    public ResponseEntity<String> handleFailedToFindService(FailedToFindService ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<String> handleEmailNotVerified(EmailNotVerifiedException ex) {

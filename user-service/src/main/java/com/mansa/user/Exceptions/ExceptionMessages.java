@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ExceptionMessages {
 
+    ROLE_NOT_FOUND("Role %s already exist"),
+    ROLE_ALREADY_EXIST("user with id %s already has the role %s"),
     TOKEN_INVALID("Token invalid"),
+    FAILED_TO_FIND_SERVICE("Oups something wrong, try later"),
     EMAIL_ALREADY_VERIFIED("Email %s already verified"),
     TOKEN_EXPIRED("Your token has expired. A new verification link has been sent to your email."),
     EMAIL_ALREADY_EXIST("Email %s already exist"),

@@ -26,7 +26,7 @@ public class RoleController {
         return new ResponseEntity<>(roleService.all(),HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("byId/{id}")
     public ResponseEntity<RoleDto> roleById(@PathVariable String id){
         return new ResponseEntity<>(roleService.getById(id),HttpStatus.OK);
     }
@@ -39,5 +39,10 @@ public class RoleController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable String id){
         return new ResponseEntity<>(roleService.delete(id),HttpStatus.OK);
+    }
+
+    @GetMapping("byRole/{role}")
+    public ResponseEntity<RoleDto> getByRole(@PathVariable String role){
+        return new ResponseEntity<>(roleService.getByRole(role),HttpStatus.OK);
     }
 }

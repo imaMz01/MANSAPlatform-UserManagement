@@ -1,13 +1,16 @@
 package com.mansa.user.Services;
 
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
+import com.mansa.user.Dtos.RoleDto;
 import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Entities.User;
 import com.mansa.user.Exceptions.*;
+import com.mansa.user.FeignClient.RoleFeignClient;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;
+import com.mansa.user.Util.Statics;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -43,6 +46,7 @@ public class UserServiceImp implements UserService{
     @Value("${token.signing.key}")
     private String secretKey;
     private final JavaMailSender mailSender;
+    private final RoleFeignClient roleFeignClient;
 
     @Override
     public UserDto add(UserDto userDto) {
@@ -55,6 +59,8 @@ public class UserServiceImp implements UserService{
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(false);
         user.setEmailVerified(false);
+        RoleDto roleDto = roleFeignClient.getByRole(Statics.DEFAULT_ROLE).getBody();
+        if(roleDto != null) user.getRole().add(roleDto.getRole());
         return UserMapper.userMapper.toDto(
                 userRepository.save(user)
         );
@@ -223,4 +229,35 @@ public class UserServiceImp implements UserService{
         }
         return null;
     }
+
+    @Override
+    public UserDto addAuthority(String id, String role) {
+        User user = getUser(id);
+        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
+        if(roleDto != null){
+            if(user.getRole().contains(roleDto.getRole()))
+                throw new RoleAlreadyExistException(id,role);
+            user.getRole().add(roleDto.getRole());
+        }
+
+        return UserMapper.userMapper.toDto(
+                userRepository.save(user)
+        );
+    }
+
+    @Override
+    public UserDto removeAuthority(String id, String role) {
+
+        User user = getUser(id);
+        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
+        if(roleDto != null){
+            user.getRole().remove(roleDto.getRole());
+        }
+
+        return UserMapper.userMapper.toDto(
+                userRepository.save(user)
+        );
+    }
+
+
 }

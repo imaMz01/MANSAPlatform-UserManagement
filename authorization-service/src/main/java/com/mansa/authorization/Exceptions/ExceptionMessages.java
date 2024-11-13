@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ExceptionMessages {
 
-    ROLE_NOT_FOUND("Role with id %s not found");
+    ROLE_NOT_FOUND("Role not found"),
+    ROLE_ALREADY_EXIST("Role %s already exist");
 
     private final String message;
 

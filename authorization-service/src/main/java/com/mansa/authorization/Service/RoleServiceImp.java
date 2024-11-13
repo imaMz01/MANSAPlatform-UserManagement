@@ -2,6 +2,7 @@ package com.mansa.authorization.Service;
 
 import com.mansa.authorization.Dto.RoleDto;
 import com.mansa.authorization.Entity.Role;
+import com.mansa.authorization.Exceptions.RoleAlreadyExistException;
 import com.mansa.authorization.Exceptions.RoleNotFoundException;
 import com.mansa.authorization.Mapper.RoleMapper;
 import com.mansa.authorization.Repository.RoleRepository;
@@ -19,6 +20,9 @@ public class RoleServiceImp implements RoleService{
 
     @Override
     public RoleDto add(RoleDto roleDto) {
+        if(roleRepository.findByRole(roleDto.getRole()).isPresent()){
+            throw new RoleAlreadyExistException(roleDto.getRole());
+        }
         Role role = RoleMapper.roleMapper.toEntity(roleDto);
         role.setId(UUID.randomUUID().toString());
         return RoleMapper.roleMapper.toDto(
@@ -33,7 +37,7 @@ public class RoleServiceImp implements RoleService{
 
     public Role getRole(String id){
         return roleRepository.findById(id).orElseThrow(
-                ()->new RoleNotFoundException(id)
+                RoleNotFoundException::new
         );
     }
 
@@ -58,4 +62,15 @@ public class RoleServiceImp implements RoleService{
         roleRepository.delete(getRole(id));
         return "Role deleted successfully";
     }
+
+    @Override
+    public RoleDto getByRole(String role) {
+        return RoleMapper.roleMapper.toDto(
+                roleRepository.findByRole(role).orElseThrow(
+                        RoleNotFoundException::new
+                )
+        );
+    }
+
+
 }

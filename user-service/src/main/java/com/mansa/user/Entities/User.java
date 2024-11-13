@@ -1,19 +1,22 @@
 package com.mansa.user.Entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.mansa.user.Dtos.RoleDto;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -39,9 +42,17 @@ public class User implements UserDetails {
     private LocalDateTime created;
     private LocalDateTime updated;
 
+    @ElementCollection( fetch = FetchType.EAGER)
+    @JoinTable(name = "userRoles", joinColumns = @JoinColumn(name = "idUser"))
+    @Column(name = "role", nullable = false)
+    private Set<String> role = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return role.stream().map(
+                t -> new SimpleGrantedAuthority(t.toString())
+        ).collect(Collectors.toList());
+
     }
 
     @Override
