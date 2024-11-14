@@ -1,9 +1,11 @@
 package com.mansa.authorization.Service;
 
 import com.mansa.authorization.Dto.RoleDto;
+import com.mansa.authorization.Dto.UserDto;
 import com.mansa.authorization.Entity.Role;
 import com.mansa.authorization.Exceptions.RoleAlreadyExistException;
 import com.mansa.authorization.Exceptions.RoleNotFoundException;
+import com.mansa.authorization.FeignClient.UserFeignClient;
 import com.mansa.authorization.Mapper.RoleMapper;
 import com.mansa.authorization.Repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class RoleServiceImp implements RoleService{
 
     private final RoleRepository roleRepository;
+    private final UserFeignClient userFeignClient;
 
     @Override
     public RoleDto add(RoleDto roleDto) {
@@ -70,6 +73,20 @@ public class RoleServiceImp implements RoleService{
                         RoleNotFoundException::new
                 )
         );
+    }
+
+    @Override
+    public UserDto addAuthority(String id, String role) {
+        if(roleRepository.findByRole(role).isPresent())
+            return userFeignClient.addAuthority(id,role).getBody();
+        throw new RoleNotFoundException();
+    }
+
+    @Override
+    public UserDto removeAuthority(String id, String role) {
+        if(roleRepository.findByRole(role).isPresent())
+            return userFeignClient.removeAuthority(id,role).getBody();
+        throw new RoleNotFoundException();
     }
 
 

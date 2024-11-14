@@ -16,10 +16,11 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler(FeignException.NotFound.class)
-    public ResponseEntity<ErrorResponse> handleFeignNotFound(FeignException.NotFound ex) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Role not found");
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<String> handleFeignException(FeignException ex) {
+        String errorMessage = ex.contentUTF8();
+        HttpStatus status = HttpStatus.valueOf(ex.status());
+        return new ResponseEntity<>(errorMessage, status);
     }
 
     @ExceptionHandler(RoleAlreadyExistException.class)
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FailedToFindService.class)
     public ResponseEntity<String> handleFailedToFindService(FailedToFindService ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)

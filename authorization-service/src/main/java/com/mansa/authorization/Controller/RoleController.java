@@ -1,6 +1,7 @@
 package com.mansa.authorization.Controller;
 
 import com.mansa.authorization.Dto.RoleDto;
+import com.mansa.authorization.Dto.UserDto;
 import com.mansa.authorization.Service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,5 +45,15 @@ public class RoleController {
     @GetMapping("byRole/{role}")
     public ResponseEntity<RoleDto> getByRole(@PathVariable String role){
         return new ResponseEntity<>(roleService.getByRole(role),HttpStatus.OK);
+    }
+
+    @PutMapping("/addAuthority/{id}/{role}")
+    public ResponseEntity<UserDto> addAuthority(@PathVariable String id, @PathVariable String role){
+        return new ResponseEntity<>(roleService.addAuthority(id,role),HttpStatus.OK);
+    }
+
+    @PutMapping("/removeAuthority/{id}/{role}")
+    public ResponseEntity<UserDto> removeAuthority(@PathVariable String id, @PathVariable String role){
+        return new ResponseEntity<>(roleService.removeAuthority(id,role),HttpStatus.OK);
     }
 }

@@ -233,11 +233,11 @@ public class UserServiceImp implements UserService{
     @Override
     public UserDto addAuthority(String id, String role) {
         User user = getUser(id);
-        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
-        if(roleDto != null){
-            if(user.getRole().contains(roleDto.getRole()))
+//        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
+        if(role != null){
+            if(user.getRole().contains(role))
                 throw new RoleAlreadyExistException(id,role);
-            user.getRole().add(roleDto.getRole());
+            user.getRole().add(role);
         }
 
         return UserMapper.userMapper.toDto(
@@ -249,9 +249,9 @@ public class UserServiceImp implements UserService{
     public UserDto removeAuthority(String id, String role) {
 
         User user = getUser(id);
-        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
-        if(roleDto != null){
-            user.getRole().remove(roleDto.getRole());
+//        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
+        if(role != null){
+            user.getRole().remove(role);
         }
 
         return UserMapper.userMapper.toDto(
