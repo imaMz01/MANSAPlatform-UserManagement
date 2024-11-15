@@ -1,6 +1,6 @@
-package com.mansa.authorization.Repository;
+package com.mansa.user.Repositories;
 
-import com.mansa.authorization.Entity.Role;
+import com.mansa.user.Entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

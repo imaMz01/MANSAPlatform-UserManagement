@@ -1,8 +1,7 @@
-package com.mansa.authorization.Controller;
+package com.mansa.user.Controllers;
 
-import com.mansa.authorization.Dto.RoleDto;
-import com.mansa.authorization.Dto.UserDto;
-import com.mansa.authorization.Service.RoleService;
+import com.mansa.user.Dtos.RoleDto;
+import com.mansa.user.Services.RoleService.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/authorization")
+@RequestMapping("/api/authorization")
 public class RoleController {
 
     private final RoleService roleService;
@@ -47,13 +46,4 @@ public class RoleController {
         return new ResponseEntity<>(roleService.getByRole(role),HttpStatus.OK);
     }
 
-    @PutMapping("/addAuthority/{id}/{role}")
-    public ResponseEntity<UserDto> addAuthority(@PathVariable String id, @PathVariable String role){
-        return new ResponseEntity<>(roleService.addAuthority(id,role),HttpStatus.OK);
-    }
-
-    @PutMapping("/removeAuthority/{id}/{role}")
-    public ResponseEntity<UserDto> removeAuthority(@PathVariable String id, @PathVariable String role){
-        return new ResponseEntity<>(roleService.removeAuthority(id,role),HttpStatus.OK);
-    }
 }

@@ -42,14 +42,12 @@ public class User implements UserDetails {
     private LocalDateTime created;
     private LocalDateTime updated;
 
-    @ElementCollection( fetch = FetchType.EAGER)
-    @JoinTable(name = "userRoles", joinColumns = @JoinColumn(name = "idUser"))
-    @Column(name = "role", nullable = false)
-    private Set<String> role = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.stream().map(
+        return roles.stream().map(
                 t -> new SimpleGrantedAuthority(t.toString())
         ).collect(Collectors.toList());
 

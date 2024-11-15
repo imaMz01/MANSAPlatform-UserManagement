@@ -3,7 +3,7 @@ package com.mansa.user.Controllers;
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.UserDto;
-import com.mansa.user.Services.UserService;
+import com.mansa.user.Services.UserService.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

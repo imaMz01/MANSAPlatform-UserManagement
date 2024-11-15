@@ -15,6 +15,15 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(RoleAlreadyExistException.class)
+    public ResponseEntity<String> handRoleAlreadyExist(RoleAlreadyExistException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<String> handRoleNotFound(RoleNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> handleFeignException(FeignException ex) {
@@ -23,8 +32,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, status);
     }
 
-    @ExceptionHandler(RoleAlreadyExistException.class)
-    public ResponseEntity<String> handleRoleAlreadyExist(RoleAlreadyExistException ex) {
+    @ExceptionHandler(UserHasAlreadyThisRoleExistException.class)
+    public ResponseEntity<String> handleRoleAlreadyExist(UserHasAlreadyThisRoleExistException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 

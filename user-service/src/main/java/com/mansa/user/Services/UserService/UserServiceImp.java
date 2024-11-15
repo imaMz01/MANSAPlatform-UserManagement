@@ -1,15 +1,17 @@
-package com.mansa.user.Services;
+package com.mansa.user.Services.UserService;
 
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.RoleDto;
 import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.UserDto;
+import com.mansa.user.Entities.Role;
 import com.mansa.user.Entities.User;
 import com.mansa.user.Exceptions.*;
-import com.mansa.user.FeignClient.RoleFeignClient;
+import com.mansa.user.Mappers.RoleMapper;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;
+import com.mansa.user.Services.RoleService.RoleService;
 import com.mansa.user.Util.Statics;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -31,13 +33,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -46,22 +49,27 @@ public class UserServiceImp implements UserService{
     @Value("${token.signing.key}")
     private String secretKey;
     private final JavaMailSender mailSender;
-    private final RoleFeignClient roleFeignClient;
+    private final RoleService roleService;
+    private final UserMapper userMapper;
+
 
     @Override
     public UserDto add(UserDto userDto) {
         if(checkEmail(userDto.getEmail())){
             throw  new EmailAlreadyExistException(userDto.getEmail());
         }
-        User user = UserMapper.userMapper.toEntity(userDto);
+        User user = userMapper.toEntity(userDto);
         user.setId(UUID.randomUUID().toString());
         user.setCreated(LocalDateTime.now());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(false);
         user.setEmailVerified(false);
-        RoleDto roleDto = roleFeignClient.getByRole(Statics.DEFAULT_ROLE).getBody();
-        if(roleDto != null) user.getRole().add(roleDto.getRole());
-        return UserMapper.userMapper.toDto(
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        RoleDto roleDto = roleService.getByRole(Statics.DEFAULT_ROLE);
+        if(roleDto != null) user.getRoles().add(RoleMapper.roleMapper.toEntity(roleDto));
+        return userMapper.toDto(
                 userRepository.save(user)
         );
     }
@@ -80,14 +88,14 @@ public class UserServiceImp implements UserService{
         user.setAddress(userDto.getAddress());
         user.setCreated(userDto.getCreated());
         user.setUpdated(LocalDateTime.now());
-        return UserMapper.userMapper.toDto(
+        return userMapper.toDto(
                 userRepository.save(user)
         );
     }
 
     @Override
     public List<UserDto> all() {
-        return UserMapper.userMapper.toDto(userRepository.findAll());
+        return userMapper.toDto(userRepository.findAll());
     }
 
     @Override
@@ -95,14 +103,14 @@ public class UserServiceImp implements UserService{
         User user = getUser(id);
         user.setEnabled(!user.isEnabled());
         user.setUpdated(LocalDateTime.now());
-        return UserMapper.userMapper.toDto(
+        return userMapper.toDto(
                 userRepository.save(user)
         );
     }
 
     @Override
     public UserDto getById(String id) {
-        return UserMapper.userMapper.toDto(
+        return userMapper.toDto(
                 getUser(id)
         );
     }
@@ -135,12 +143,12 @@ public class UserServiceImp implements UserService{
         log.info("User return object: {}",JwtAuthenticationResponse.builder()
                 .accessToken(jwt)
                 .refreshToken(refreshToken)
-                .userDto(UserMapper.userMapper.toDto(user))
+                .userDto(userMapper.toDto(user))
                 .build());
         return JwtAuthenticationResponse.builder()
                 .accessToken(jwt)
                 .refreshToken(refreshToken)
-                .userDto(UserMapper.userMapper.toDto(user))
+                .userDto(userMapper.toDto(user))
                 .build();
     }
 
@@ -224,7 +232,7 @@ public class UserServiceImp implements UserService{
         if(authentication != null){
             Object principal = authentication.getPrincipal();
             if(principal instanceof User){
-                return UserMapper.userMapper.toDto((User)principal);
+                return userMapper.toDto((User)principal);
             }
         }
         return null;
@@ -233,14 +241,17 @@ public class UserServiceImp implements UserService{
     @Override
     public UserDto addAuthority(String id, String role) {
         User user = getUser(id);
-//        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
-        if(role != null){
-            if(user.getRole().contains(role))
-                throw new RoleAlreadyExistException(id,role);
-            user.getRole().add(role);
+        RoleDto roleDto = roleService.getByRole(role);
+        if(roleDto != null){
+            Role roleEntity = RoleMapper.roleMapper.toEntity(roleDto);
+            if(user.getRoles().stream().anyMatch(
+                    role1 -> role1.getId().equals(roleEntity.getId())
+            ))
+                throw new UserHasAlreadyThisRoleExistException(id,roleEntity.getRole());
+            user.getRoles().add(roleEntity);
         }
 
-        return UserMapper.userMapper.toDto(
+        return userMapper.toDto(
                 userRepository.save(user)
         );
     }
@@ -249,12 +260,14 @@ public class UserServiceImp implements UserService{
     public UserDto removeAuthority(String id, String role) {
 
         User user = getUser(id);
-//        RoleDto roleDto = roleFeignClient.getByRole(role).getBody();
-        if(role != null){
-            user.getRole().remove(role);
+        RoleDto roleDto = roleService.getByRole(role);
+        log.info("roles --------------> {}",user.getRoles().size());
+        if(roleDto != null){
+            Role roleEntity = RoleMapper.roleMapper.toEntity(roleDto);
+            user.getRoles().removeIf( role1 -> role1.getId().equals(roleEntity.getId()));
         }
 
-        return UserMapper.userMapper.toDto(
+        return userMapper.toDto(
                 userRepository.save(user)
         );
     }

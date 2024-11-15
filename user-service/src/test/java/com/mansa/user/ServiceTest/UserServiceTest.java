@@ -1,21 +1,14 @@
 package com.mansa.user.ServiceTest;
 
-import com.mansa.user.Dtos.UserDto;
-import com.mansa.user.Entities.User;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
-import com.mansa.user.Services.UserServiceImp;
+import com.mansa.user.Services.UserService.UserServiceImp;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;

@@ -1,13 +1,13 @@
-package com.mansa.authorization.Mapper;
+package com.mansa.user.Mappers;
 
-import com.mansa.authorization.Dto.RoleDto;
-import com.mansa.authorization.Entity.Role;
+import com.mansa.user.Dtos.RoleDto;
+import com.mansa.user.Entities.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface RoleMapper {
 
     RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);

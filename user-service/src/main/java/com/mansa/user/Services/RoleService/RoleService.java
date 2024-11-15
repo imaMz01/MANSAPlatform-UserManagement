@@ -1,7 +1,7 @@
-package com.mansa.authorization.Service;
+package com.mansa.user.Services.RoleService;
 
-import com.mansa.authorization.Dto.RoleDto;
-import com.mansa.authorization.Dto.UserDto;
+
+import com.mansa.user.Dtos.RoleDto;
 
 import java.util.List;
 
@@ -13,6 +13,4 @@ public interface RoleService {
     List<RoleDto> all();
     String delete(String id);
     RoleDto getByRole(String role);
-    UserDto addAuthority(String id, String role);
-    UserDto removeAuthority(String id, String role);
 }

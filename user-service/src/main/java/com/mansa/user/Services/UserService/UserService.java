@@ -1,4 +1,4 @@
-package com.mansa.user.Services;
+package com.mansa.user.Services.UserService;
 
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
