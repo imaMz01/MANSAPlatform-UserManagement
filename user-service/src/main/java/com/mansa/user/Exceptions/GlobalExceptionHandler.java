@@ -1,6 +1,5 @@
 package com.mansa.user.Exceptions;
 
-import com.mansa.user.Dtos.ErrorResponse;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,23 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenExpiredHandlerException.class)
+    public ResponseEntity<String> handleTokenExpired(TokenExpiredHandlerException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(RoleAlreadyExistException.class)
-    public ResponseEntity<String> handRoleAlreadyExist(RoleAlreadyExistException ex) {
+    public ResponseEntity<String> handleRoleAlreadyExist(RoleAlreadyExistException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<String> handRoleNotFound(RoleNotFoundException ex) {
+    public ResponseEntity<String> handleRoleNotFound(RoleNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

@@ -1,6 +1,7 @@
 package com.mansa.user.Security;
 
 import com.mansa.user.Repositories.UserRepository;
+import com.mansa.user.Util.Statics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +70,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(ex -> ex.
                         requestMatchers(WHITE_LIST_URL).permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/test").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers( "/api/authorization/**").hasRole(Statics.ADMIN_ROLE)
                         .anyRequest().authenticated())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer

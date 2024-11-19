@@ -26,15 +26,24 @@ spring:
           auth: true
           starttls:
             enable: true
-token:
-  signing:
-    key: koa87doom02hoax08valid02udatta08320dalliance80we8redwood0232dd87
-    expiration: 604800000    # 1 day for access token
-    refresh-token:
-      expiration: 3600000  # 1 hour for refresh toke
+#token:
+#  signing:
+#    key: koa87doom02hoax08valid02udatta08320dalliance80we8redwood0232dd87
+#    expiration: 604800000    # 1 day for access token
+#    refresh-token:
+#      expiration: 3600000  # 1 hour for refresh toke
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
 server:
   port: 0
+
+token:
+  signing:
+    key: koa87doom02hoax08valid02udatta08320dalliance80we8redwood0232dd87
+    private-key: user-service/src/main/resources/keys/privateKey.pem
+    public-key: user-service/src/main/resources/keys/publicKey.pem
+  expiration:
+    access-token: 1200000
+    refresh-token: 3600000
