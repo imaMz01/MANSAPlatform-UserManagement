@@ -31,7 +31,7 @@ spring:
       routes[2]:
         id: subscription-service
         uri: lb://subscription-service
-        predicates[0]: Path=/Order/**
+        predicates[0]: Path=/Subscription/**
       routes[3]:
         id: notification-service
         uri: lb://notification-service

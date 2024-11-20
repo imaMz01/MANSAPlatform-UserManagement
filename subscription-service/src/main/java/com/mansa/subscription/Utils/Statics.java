@@ -1,4 +1,4 @@
-package com.mansa.user.Util;
+package com.mansa.subscription.Utils;
 
 import org.springframework.stereotype.Component;
 

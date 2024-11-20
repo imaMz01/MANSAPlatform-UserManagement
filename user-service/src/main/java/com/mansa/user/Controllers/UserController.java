@@ -34,25 +34,25 @@ public class UserController {
         return response;
     }
 
-    @PreAuthorize("hasRole('MANSA-ADMIN-GR')")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserDto>> all(){
         return new ResponseEntity<>(userService.all(),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-GUEST-GR')")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> userById(@PathVariable String id){
         return new ResponseEntity<>(userService.getById(id),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-GUEST-GR')")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @PutMapping("/users/me")
     public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.update(userDto),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-ADMIN-GR')")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PutMapping("/admin/users/{id}/status")
     public ResponseEntity<UserDto> changeStatus(@PathVariable String id){
         return new ResponseEntity<>(userService.changeStatus(id),HttpStatus.OK);
@@ -84,19 +84,19 @@ public class UserController {
         return new ResponseEntity<>(userService.verifyEmail(token),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-GUEST-GR')")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @GetMapping("/users/me")
     public ResponseEntity<UserDto> getCurrentUser(){
         return new ResponseEntity<>(userService.getCurrentUser(),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-ADMIN-GR')")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PutMapping("/admin/addAuthority/{id}/{role}")
     public ResponseEntity<UserDto> addAuthority(@PathVariable String id, @PathVariable String role){
         return new ResponseEntity<>(userService.addAuthority(id,role),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MANSA-ADMIN-GR')")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PutMapping("/admin/removeAuthority/{id}/{role}")
     public ResponseEntity<UserDto> removeAuthority(@PathVariable String id, @PathVariable String role){
         return new ResponseEntity<>(userService.removeAuthority(id,role),HttpStatus.OK);
