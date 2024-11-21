@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ExceptionMessages {
 
+    FAILED_TO_FIND_SERVICE("Oups something wrong, try later"),
     SUBSCRIPTION_NOT_FOUND("Subscription with id %s not found");
 
     private final String message;

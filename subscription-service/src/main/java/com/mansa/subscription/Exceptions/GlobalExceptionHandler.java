@@ -1,5 +1,6 @@
 package com.mansa.subscription.Exceptions;
 
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,9 +14,21 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(FailedToFindService.class)
+    public ResponseEntity<String> handleSFailedToFindService(FailedToFindService ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(SubscriptionNotFound.class)
     public ResponseEntity<String> handleSubscriptionNotFound(SubscriptionNotFound ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<String> handleFeignException(FeignException ex) {
+        String errorMessage = ex.contentUTF8();
+        HttpStatus status = HttpStatus.valueOf(ex.status());
+        return new ResponseEntity<>(errorMessage, status);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -17,7 +17,7 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    @PreAuthorize("hasRole('MANSA-GUEST-GR')")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @PostMapping("/subscriptions/request")
     public ResponseEntity<SubscriptionDto> add(@RequestBody SubscriptionDto subscriptionDto){
         return new ResponseEntity<>(subscriptionService.add(subscriptionDto), HttpStatus.CREATED);
@@ -29,13 +29,13 @@ public class SubscriptionController {
         return new ResponseEntity<>(subscriptionService.delete(id),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @GetMapping("/admin/subscriptions")
     public ResponseEntity<List<SubscriptionDto>> subscriptions(){
         return new ResponseEntity<>(subscriptionService.subscriptions(),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
     @GetMapping("/subscriptions/{id}")
     public ResponseEntity<SubscriptionDto> subscriptionById(@PathVariable String id){
         return new ResponseEntity<>(subscriptionService.getById(id),HttpStatus.OK);

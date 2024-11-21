@@ -1,9 +1,6 @@
 package com.mansa.subscription.Dtos;
 
 import com.mansa.subscription.Enums.Status;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +18,5 @@ public class SubscriptionDto {
     private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private UserDto userDto;
 }
