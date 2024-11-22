@@ -79,12 +79,12 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserDto update(UserDto userDto) {
-        User user = getUser(userDto.getId());
+        User user = getUser(getCurrentUser().getId());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setTel(userDto.getTel());
         user.setEmail(userDto.getEmail());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setAddress(userDto.getAddress());
         user.setCreated(userDto.getCreated());
         user.setUpdated(LocalDateTime.now());

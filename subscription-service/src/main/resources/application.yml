@@ -12,6 +12,13 @@ spring:
       ddl-auto: update
     show-sql: true
   cloud:
+    stream:
+      bindings:
+        consumeNotification-out-0:
+          destination: notification-topic
+      kafka:
+        binder:
+          brokers: localhost:9092
     openfeign:
       circuitbreaker:
         enabled: true

@@ -1,15 +1,22 @@
 package com.mansa.subscription.Services;
 
+import com.mansa.subscription.Dtos.EmailRequest;
 import com.mansa.subscription.Dtos.SubscriptionDto;
+import com.mansa.subscription.Dtos.UserDto;
 import com.mansa.subscription.Entities.Subscription;
 import com.mansa.subscription.Enums.Status;
 import com.mansa.subscription.Exceptions.SubscriptionNotFound;
 import com.mansa.subscription.FeignClient.UserFeign;
 import com.mansa.subscription.Mappers.SubscriptionMapper;
 import com.mansa.subscription.Repositories.SubscriptionRepository;
+import com.mansa.subscription.Utils.Statics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,17 +30,17 @@ public class SubscriptionServiceImp implements SubscriptionService{
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionMapper mapper;
     private final UserFeign userFeign;
+    private final StreamBridge streamBridge;
 
     @Override
     public SubscriptionDto add(SubscriptionDto subscriptionDto) {
         Subscription subscription = mapper.toEntity(subscriptionDto);
         subscription.setId(UUID.randomUUID().toString());
         subscription.setStatus(Status.PENDING);
-        subscription.setUserId(userFeign.userById(
-                subscriptionDto.getUserDto().getId())
-                .getBody().getId()
-        );
-        return mapper.toDto(subscriptionRepository.save(subscription));
+        subscription.setUserId(userFeign.getCurrentUser().getBody().getId());
+        SubscriptionDto subscriptionDto1= mapper.toDto(subscriptionRepository.save(subscription));
+        subscriptionDto1.setUserDto(getById(subscriptionDto1.getId()).getUserDto());
+        return subscriptionDto1;
     }
 
     @Override
@@ -73,16 +80,34 @@ public class SubscriptionServiceImp implements SubscriptionService{
     }
 
     @Override
+    @Transactional
     public SubscriptionDto approveRequest(String id) {
         Subscription subscription = subscriptionById(id);
         subscription.setStatus(Status.APPROVED);
-        return mapper.toDto(subscriptionRepository.save(subscription));
+        SubscriptionDto subscriptionDto1= mapper.toDto(subscriptionRepository.save(subscription));
+        subscriptionDto1.setUserDto(getById(subscriptionDto1.getId()).getUserDto());
+        userFeign.addAuthority(subscriptionDto1.getUserDto().getId(), Statics.SUBSCRIBER_ROLE);
+        userFeign.removeAuthority(subscriptionDto1.getUserDto().getId(), Statics.DEFAULT_ROLE);
+        EmailRequest emailRequest = new EmailRequest(subscriptionDto1.getUserDto().getEmail(),
+                subscriptionDto1.getUserDto().getLastName(),
+                subscriptionDto1.getStatus().toString());
+        log.info("detail : {}",emailRequest.toString());
+        streamBridge.send("notification-topic",emailRequest);
+        return subscriptionDto1;
     }
 
     @Override
+    @Transactional
     public SubscriptionDto rejectRequest(String id) {
         Subscription subscription = subscriptionById(id);
         subscription.setStatus(Status.REJECTED);
-        return mapper.toDto(subscriptionRepository.save(subscription));
+        SubscriptionDto subscriptionDto1= mapper.toDto(subscriptionRepository.save(subscription));
+        subscriptionDto1.setUserDto(getById(subscriptionDto1.getId()).getUserDto());
+        EmailRequest emailRequest = new EmailRequest(subscriptionDto1.getUserDto().getEmail(),
+                subscriptionDto1.getUserDto().getLastName(),
+                subscriptionDto1.getStatus().toString());
+        streamBridge.send("notification-topic",emailRequest);
+        return subscriptionDto1;
     }
+
 }

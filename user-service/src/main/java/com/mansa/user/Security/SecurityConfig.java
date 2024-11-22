@@ -70,7 +70,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(ex -> ex.
                         requestMatchers(WHITE_LIST_URL).permitAll()
-                        .requestMatchers( "/api/authorization/**").hasRole(Statics.ADMIN_ROLE)
+//                        .requestMatchers( "/api/authorization/**").hasRole(Statics.ADMIN_ROLE)
                         .anyRequest().authenticated())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer

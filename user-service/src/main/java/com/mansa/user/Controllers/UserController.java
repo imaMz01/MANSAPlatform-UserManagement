@@ -40,13 +40,13 @@ public class UserController {
         return new ResponseEntity<>(userService.all(),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> userById(@PathVariable String id){
         return new ResponseEntity<>(userService.getById(id),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.ADMIN_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
     @PutMapping("/users/me")
     public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.update(userDto),HttpStatus.OK);
@@ -84,7 +84,7 @@ public class UserController {
         return new ResponseEntity<>(userService.verifyEmail(token),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE)")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.ADMIN_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
     @GetMapping("/users/me")
     public ResponseEntity<UserDto> getCurrentUser(){
         return new ResponseEntity<>(userService.getCurrentUser(),HttpStatus.OK);

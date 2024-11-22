@@ -1,6 +1,7 @@
 package com.mansa.subscription.Services;
 
 import com.mansa.subscription.Dtos.SubscriptionDto;
+import com.mansa.subscription.Dtos.UserDto;
 
 import java.util.List;
 

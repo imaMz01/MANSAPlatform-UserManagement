@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Utilisation correcte de th:title pour rendre dynamiquement le titre de la page -->
+    <title th:text="'Subscription ' + ${status}"></title>
+</head>
+<body>
+<h2 th:text="'Dear ' + ${lastname} + ','"></h2>
+<p>
+    <!-- Affichage conditionnel basé sur le statut -->
+    <span th:if="${status == 'APPROVED'}">
+        We are pleased to inform you that your subscription request has been successfully <strong>approved</strong>.
+    </span>
+    <span th:if="${status == 'REJECTED'}">
+        We regret to inform you that your subscription request has <strong>not been approved</strong> at this time.
+    </span><br>
+    Best regards,
+</p>
+</body>
+</html>

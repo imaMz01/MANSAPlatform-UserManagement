@@ -18,6 +18,26 @@ public class UserFallBack implements FallbackFactory<UserFeign> {
                     throw new FailedToFindService();
                 throw new RuntimeException(cause);
             }
+            @Override
+            public ResponseEntity<UserDto> getCurrentUser(){
+                if(cause instanceof FeignException.ServiceUnavailable)
+                    throw new FailedToFindService();
+                throw new RuntimeException(cause);
+            }
+
+            @Override
+            public ResponseEntity<UserDto> addAuthority(String id,String role){
+                if(cause instanceof FeignException.ServiceUnavailable)
+                    throw new FailedToFindService();
+                throw new RuntimeException(cause);
+            }
+
+            @Override
+            public ResponseEntity<UserDto> removeAuthority(String id,String role){
+                if(cause instanceof FeignException.ServiceUnavailable)
+                    throw new FailedToFindService();
+                throw new RuntimeException(cause);
+            }
         };
     }
 }
