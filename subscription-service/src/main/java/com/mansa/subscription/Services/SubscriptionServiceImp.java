@@ -110,4 +110,9 @@ public class SubscriptionServiceImp implements SubscriptionService{
         return subscriptionDto1;
     }
 
+    @Override
+    public List<SubscriptionDto> userSubscriptions(String id) {
+        return mapper.toDto(subscriptionRepository.findByUserId(id));
+    }
+
 }

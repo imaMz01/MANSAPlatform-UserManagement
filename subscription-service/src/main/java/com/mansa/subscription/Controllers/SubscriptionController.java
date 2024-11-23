@@ -52,4 +52,10 @@ public class SubscriptionController {
     public ResponseEntity<SubscriptionDto> rejectSubscription(@PathVariable String id){
         return new ResponseEntity<>(subscriptionService.rejectRequest(id),HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole(@Statics.SUBSCRIBER_ROLE)")
+    @GetMapping("/userSubscriptions/{id}")
+    public ResponseEntity<List<SubscriptionDto>> userSubscriptions(@PathVariable String id){
+        return new ResponseEntity<>(subscriptionService.userSubscriptions(id),HttpStatus.OK);
+    }
 }

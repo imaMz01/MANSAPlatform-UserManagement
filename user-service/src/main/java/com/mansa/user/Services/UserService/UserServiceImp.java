@@ -1,12 +1,10 @@
 package com.mansa.user.Services.UserService;
 
-import com.mansa.user.Dtos.JwtAuthenticationResponse;
-import com.mansa.user.Dtos.RoleDto;
-import com.mansa.user.Dtos.SignInRequest;
-import com.mansa.user.Dtos.UserDto;
+import com.mansa.user.Dtos.*;
 import com.mansa.user.Entities.Role;
 import com.mansa.user.Entities.User;
 import com.mansa.user.Exceptions.*;
+import com.mansa.user.FeignClient.SubscriptionFeign;
 import com.mansa.user.Mappers.RoleMapper;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
@@ -51,6 +49,7 @@ public class UserServiceImp implements UserService {
     private final JavaMailSender mailSender;
     private final RoleService roleService;
     private final UserMapper userMapper;
+    private final SubscriptionFeign subscriptionFeign;
 
 
     @Override
@@ -270,6 +269,11 @@ public class UserServiceImp implements UserService {
         return userMapper.toDto(
                 userRepository.save(user)
         );
+    }
+
+    @Override
+    public List<SubscriptionDto> userSubscriptions() {
+        return subscriptionFeign.userSubscriptions(getCurrentUser().getId()).getBody();
     }
 
 

@@ -2,6 +2,7 @@ package com.mansa.user.Controllers;
 
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
+import com.mansa.user.Dtos.SubscriptionDto;
 import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Services.UserService.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -100,5 +101,11 @@ public class UserController {
     @PutMapping("/admin/removeAuthority/{id}/{role}")
     public ResponseEntity<UserDto> removeAuthority(@PathVariable String id, @PathVariable String role){
         return new ResponseEntity<>(userService.removeAuthority(id,role),HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole(@Statics.SUBSCRIBER_ROLE)")
+    @GetMapping("/userSubscriptions")
+    public ResponseEntity<List<SubscriptionDto>> userSubscriptions(){
+        return new ResponseEntity<>(userService.userSubscriptions(),HttpStatus.OK);
     }
 }

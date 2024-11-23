@@ -20,7 +20,7 @@ public class Subscription {
     private String id;
     @Enumerated(EnumType.STRING)
     private Status status;
-    private String UserId;
+    private String userId;
     private LocalDateTime createdAt;
     @PrePersist
     protected void onCreate(){

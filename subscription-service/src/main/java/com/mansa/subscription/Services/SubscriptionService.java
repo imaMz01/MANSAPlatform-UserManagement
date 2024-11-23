@@ -14,5 +14,6 @@ public interface SubscriptionService {
     List<SubscriptionDto> subscriptions();
     SubscriptionDto approveRequest(String id);
     SubscriptionDto rejectRequest(String id);
+    List<SubscriptionDto> userSubscriptions(String id);
 
 }

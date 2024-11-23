@@ -2,6 +2,7 @@ package com.mansa.user.Services.UserService;
 
 import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
+import com.mansa.user.Dtos.SubscriptionDto;
 import com.mansa.user.Dtos.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,4 +23,5 @@ public interface UserService {
     UserDto getCurrentUser();
     UserDto addAuthority(String id, String role);
     UserDto removeAuthority(String id, String role);
+    List<SubscriptionDto> userSubscriptions();
 }
