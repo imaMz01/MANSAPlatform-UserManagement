@@ -18,10 +18,11 @@ public interface UserService {
     UserDto getById(String id);
     JwtAuthenticationResponse signIn(SignInRequest request);
     void logout(HttpServletRequest request, HttpServletResponse response);
-    String generateEmailVerificationToken(String id);
+    String generateEmailVerificationTokenAndSendEmail(String id);
     String verifyEmail(String token);
     UserDto getCurrentUser();
     UserDto addAuthority(String id, String role);
     UserDto removeAuthority(String id, String role);
     List<SubscriptionDto> userSubscriptions();
+    boolean checkEmail(String email);
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Email verification'"></title>
+</head>
+<body>
+    <h2 th:text="'Dear ' + ${lastname} + ','"></h2>
+    <p>
+        <span>
+            Please click the following link to verify your email:
+            <i th:href="'http://localhost:8081/api/users/verify/' + ${token}">Click here to verify your email</i><br>
+        </span><br>
+        Best regards,
+    </p>
+</body>
+</html>

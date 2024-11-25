@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Invitation</title>
+</head>
+<body>
+<h2>Hello,</h2>
+<p>
+    We are excited to invite you to become an administrator of our application.<br>
+    To accept the invitation, simply click the link below:<br><br>
+    <a th:href="'http://localhost:8081/api/admin/invite/verify/' + ${token}" target="_blank">
+        Accept Admin Invitation
+    </a><br><br>
+    We look forward to your participation.<br><br>
+    Best regards,<br>
+</p>
+</body>
+</html>

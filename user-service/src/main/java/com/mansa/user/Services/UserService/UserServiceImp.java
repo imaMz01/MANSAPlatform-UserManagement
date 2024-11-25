@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,6 +50,7 @@ public class UserServiceImp implements UserService {
     private final RoleService roleService;
     private final UserMapper userMapper;
     private final SubscriptionFeign subscriptionFeign;
+    private final StreamBridge streamBridge;
 
 
     @Override
@@ -172,9 +173,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public String generateEmailVerificationToken(String id) {
+    public String generateEmailVerificationTokenAndSendEmail(String id) {
         String token= jwtTokenProvider.generateEmailVerificationToken(id);
-        sendVerificationEmail(getUser(id).getEmail(),token);
+        VerificationRequest request = new VerificationRequest(getUser(id).getLastName(),
+                getUser(id).getEmail(),token);
+        streamBridge.send("VerificationEmail-topic",request);
         return token;
     }
 
@@ -197,7 +200,7 @@ public class UserServiceImp implements UserService {
         }catch (ExpiredJwtException e) {
             System.out.println(e.getMessage());
             log.info("id is : {}",e.getClaims().getSubject());
-            generateEmailVerificationToken(e.getClaims().getSubject());
+            generateEmailVerificationTokenAndSendEmail(e.getClaims().getSubject());
             throw new TokenExpiredException();
         }  catch (JwtException e) {
             log.info("error : {}",e.getMessage());
@@ -209,20 +212,6 @@ public class UserServiceImp implements UserService {
         return userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(id)
         );
-    }
-
-    public void sendVerificationEmail(String toEmail, String token) {
-
-        String subject = "Email Verification";
-        String content = "Please click the following link to verify your email: "
-                + "http://localhost:8081/api/users/verify/" + token;
-
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(toEmail);
-        email.setSubject(subject);
-        email.setText(content);
-
-        mailSender.send(email);
     }
 
     @Override

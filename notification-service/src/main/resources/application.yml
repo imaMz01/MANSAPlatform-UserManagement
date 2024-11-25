@@ -16,6 +16,10 @@ spring:
       bindings:
         consumeNotification-in-0:
           destination: notification-topic
+        consumeVerificationEmail-in-0:
+          destination: VerificationEmail-topic
+        consumeVerificationAdminInvitation-in-0:
+          destination: VerificationAdminInvitation-topic
       kafka:
         binder:
           brokers: localhost:9092

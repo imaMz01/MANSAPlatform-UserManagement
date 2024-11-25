@@ -2,6 +2,7 @@ package com.mansa.subscription.Controllers;
 
 import com.mansa.subscription.Dtos.SubscriptionDto;
 import com.mansa.subscription.Services.SubscriptionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class SubscriptionController {
 
     @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
     @PostMapping("/subscriptions/request")
-    public ResponseEntity<SubscriptionDto> add(@RequestBody SubscriptionDto subscriptionDto){
+    public ResponseEntity<SubscriptionDto> add(@Valid @RequestBody SubscriptionDto subscriptionDto){
         return new ResponseEntity<>(subscriptionService.add(subscriptionDto), HttpStatus.CREATED);
     }
 

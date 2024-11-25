@@ -15,6 +15,15 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+    stream:
+      bindings:
+        consumeVerificationEmail-out-0:
+          destination: VerificationEmail-topic
+        consumeVerificationAdminInvitation-out-0:
+          destination: VerificationAdminInvitation-topic
+      kafka:
+        binder:
+          brokers: localhost:9092
   mail:
     host: smtp.gmail.com
     port: 587

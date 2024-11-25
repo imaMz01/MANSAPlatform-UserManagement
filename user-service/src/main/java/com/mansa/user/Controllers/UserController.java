@@ -30,7 +30,7 @@ public class UserController {
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto){
         ResponseEntity<UserDto> response= new ResponseEntity<>(userService.add(userDto), HttpStatus.CREATED);
         if(response.getStatusCode() == HttpStatus.CREATED){
-            userService.generateEmailVerificationToken(response.getBody().getId());
+            userService.generateEmailVerificationTokenAndSendEmail(response.getBody().getId());
         }
         return response;
     }
@@ -76,7 +76,7 @@ public class UserController {
 
     @GetMapping("/generateEmailValidationToken/{id}")
     public ResponseEntity<String> generateToken(@PathVariable String id){
-        return new ResponseEntity<>(userService.generateEmailVerificationToken(id),HttpStatus.OK);
+        return new ResponseEntity<>(userService.generateEmailVerificationTokenAndSendEmail(id),HttpStatus.OK);
     }
 
 

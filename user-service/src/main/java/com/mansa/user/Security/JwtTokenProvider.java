@@ -125,6 +125,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateAdminInvitationVerificationToken(String id){
+        return Jwts.builder()
+                .setSubject(id)
+                .setIssuedAt(new Date())
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private PrivateKey loadPrivateKey(String path) throws Exception {
         String key = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
         key = key.replace("-----BEGIN PRIVATE KEY-----", "")

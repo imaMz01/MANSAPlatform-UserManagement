@@ -2,6 +2,7 @@ package com.mansa.user.Controllers;
 
 import com.mansa.user.Dtos.RoleDto;
 import com.mansa.user.Services.RoleService.RoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class RoleController {
 
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PostMapping
-    public ResponseEntity<RoleDto> add(@RequestBody RoleDto roleDto){
+    public ResponseEntity<RoleDto> add(@Valid @RequestBody RoleDto roleDto){
         return new ResponseEntity<>(roleService.add(roleDto), HttpStatus.CREATED);
     }
 

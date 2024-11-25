@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 public enum ExceptionMessages {
 
     ROLE_NOT_FOUND("Role not found"),
+    INVITATION_ALREADY_ACCEPTED("Invitation already accepted"),
+    INVITATION_NOT_FOUND("Invitation with id %s not found"),
     USER_HAS_ALREADY_THIS_ROLE("user with id %s already has the role %s"),
     TOKEN_INVALID("Token invalid"),
     FAILED_TO_FIND_SERVICE("Oups something wrong, try later"),
