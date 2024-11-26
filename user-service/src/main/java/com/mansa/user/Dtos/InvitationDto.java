@@ -20,7 +20,7 @@ public class InvitationDto {
     @NotEmpty(message = "Email should be not empty")
     private String email;
     private boolean accepted;
-    private UserDto userDto;
+    private UserDto invitedBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

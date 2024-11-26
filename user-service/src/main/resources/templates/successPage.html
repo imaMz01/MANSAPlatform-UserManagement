@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4CAF50; /* Success green color */
+            margin-bottom: 20px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green for button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049; /* Hover effect for button */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 th:text="${message}"></h1> <!-- Display the success message -->
+    <p class="message">Your account has been successfully created, and you are now an administrator.</p>
+    <a href="/home" class="button">Back to Home</a>
+</div>
+
+</body>
+</html>

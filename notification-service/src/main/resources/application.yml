@@ -20,6 +20,8 @@ spring:
           destination: VerificationEmail-topic
         consumeVerificationAdminInvitation-in-0:
           destination: VerificationAdminInvitation-topic
+        consumeCredentialsEmail-in-0:
+          destination: consumeCredentialsEmail-topic
       kafka:
         binder:
           brokers: localhost:9092

@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation,String> {
 
-    List<Invitation> findByUser(User user);
+    List<Invitation> findByInvitedBy(User user);
 }

@@ -10,6 +10,7 @@ import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;
 import com.mansa.user.Services.RoleService.RoleService;
+import com.mansa.user.Util.PasswordGenerator;
 import com.mansa.user.Util.Statics;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -75,6 +76,27 @@ public class UserServiceImp implements UserService {
     }
     public boolean checkEmail(String email){
         return userRepository.findByEmailIgnoreCase(email).isPresent();
+    }
+
+    @Override
+    public User userByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(
+
+        );
+    }
+
+    @Override
+    public String createAccount(String email) {
+        User user = new User();
+        user.setId(UUID.randomUUID().toString());
+        user.setEmailVerified(true);
+        user.setEnabled(true);
+        user.setCreated(LocalDateTime.now());
+        user.setEmail(email);
+        String password = PasswordGenerator.generatePassword(10);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+        return password;
     }
 
     @Override

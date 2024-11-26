@@ -4,6 +4,7 @@ import com.mansa.user.Dtos.JwtAuthenticationResponse;
 import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.SubscriptionDto;
 import com.mansa.user.Dtos.UserDto;
+import com.mansa.user.Entities.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,4 +26,6 @@ public interface UserService {
     UserDto removeAuthority(String id, String role);
     List<SubscriptionDto> userSubscriptions();
     boolean checkEmail(String email);
+    User userByEmail(String email);
+    String createAccount(String email);
 }

@@ -2,6 +2,7 @@ package com.mansa.notification.Service;
 
 import com.mansa.notification.Dtos.EmailRequest;
 import com.mansa.notification.Dtos.EmailVerificationRequest;
+import com.mansa.notification.Dtos.SignInRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +51,26 @@ public class EmailService {
 //        };
 //    }
 
+//    @Bean
+//    public Consumer<EmailVerificationRequest> consumeVerificationAdminInvitation() {
+//        return message -> {
+//            try {
+//                System.out.println("Received notification :" + message.toString());
+//                sendAdminInvitation(message);
+//                System.out.println("Email sent successfully to " + message.getEmail());
+//            } catch (Exception e) {
+//                System.err.println("Failed to process email notification: " + e.getMessage());
+//            }
+//
+//        };
+//    }
+
     @Bean
-    public Consumer<EmailVerificationRequest> consumeVerificationAdminInvitation() {
+    public Consumer<SignInRequest> consumeCredentialsEmail() {
         return message -> {
             try {
                 System.out.println("Received notification :" + message.toString());
-                sendAdminInvitation(message);
+                sendCredentials(message);
                 System.out.println("Email sent successfully to " + message.getEmail());
             } catch (Exception e) {
                 System.err.println("Failed to process email notification: " + e.getMessage());
@@ -80,10 +95,18 @@ public class EmailService {
         sendEmail(request.getEmail(), context,"Email verification","VerificationEmail");
     }
 
+    public void sendCredentials(SignInRequest request) throws MessagingException {
+
+        Context context = new Context();
+        context.setVariable("email", request.getEmail());
+        context.setVariable("password", request.getPassword());
+        sendEmail(request.getEmail(), context,"Your Account Login Information","credentialsEmail");
+    }
+
     public void sendAdminInvitation(EmailVerificationRequest emailRequest) throws MessagingException {
 
         Context context = new Context();
-        context.setVariable("token", emailRequest.getLastName());
+        context.setVariable("token", emailRequest.getToken());
         sendEmail(emailRequest.getEmail(), context,"Admin Invitation","AdminInvitationEmail");
     }
 

@@ -2,10 +2,7 @@ package com.mansa.user.Entities;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 public class Invitation {
 
@@ -22,7 +20,7 @@ public class Invitation {
     private String email;
     private boolean accepted;
     @ManyToOne
-    private User user;
+    private User invitedBy;
     private LocalDateTime createdAt;
     @PrePersist
     protected void onCreate(){

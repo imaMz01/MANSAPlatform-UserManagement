@@ -17,6 +17,7 @@ public enum ExceptionMessages {
     INVALID_EMAIL_OR_PASSWORD("Invalid email or password"),
     EMAIL_NOT_VERIFIED("Your email is not verified yet. Please check your inbox and follow the instructions to complete the verification process."),
     USER_NOT_FOUND("User with id %s not found"),
+    USER_WITH_EMAIL_NOT_FOUND("User with email %s not found"),
     YOUR_TOKEN_EXPIRED("Your token has expired."),
     ACCESS_DENIED("You do not have permission to access this resource."),
     ROLE_ALREADY_EXIST("Role %s already exist");
