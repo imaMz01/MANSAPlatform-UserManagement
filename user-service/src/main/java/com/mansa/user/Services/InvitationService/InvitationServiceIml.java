@@ -2,6 +2,7 @@ package com.mansa.user.Services.InvitationService;
 
 import com.mansa.user.Dtos.InvitationDto;
 import com.mansa.user.Dtos.SignInRequest;
+import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Dtos.VerificationRequest;
 import com.mansa.user.Entities.Invitation;
 import com.mansa.user.Entities.User;
@@ -44,6 +45,10 @@ public class InvitationServiceIml implements InvitationService{
     @Transactional
     public InvitationDto sendInvitation(InvitationDto invitationDto) {
         Invitation invitation = mapper.toEntity(invitationDto);
+        if(userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+                role1 -> role1.getRole().equals(Statics.ADMIN_ROLE)
+        ))
+            throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.ADMIN_ROLE);
         invitation.setId(UUID.randomUUID().toString());
         invitation.setInvitedBy(userMapper.toEntity(userService.getCurrentUser()));
         InvitationDto invitationSaved = mapper.toDto(invitationRepository.save(invitation));
@@ -98,6 +103,45 @@ public class InvitationServiceIml implements InvitationService{
         }  catch (Exception e) {
             log.info("error : {}",e.getMessage());
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ModelAndView verifyInvit(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String idAdminInvitation = claims.getSubject();
+            log.info(idAdminInvitation);
+
+            Invitation invitation = getById(idAdminInvitation);
+            if(invitation.isAccepted()){
+                return new ModelAndView("errorPage").addObject("message", "Invitation already accepted.");
+                //throw new InvitationAlreadyAcceptedException();
+            }
+            invitation.setAccepted(true);
+            invitationRepository.save(invitation);
+            if (userService.checkEmail(invitation.getEmail())) {
+                UserDto user = userMapper.toDto(userService.userByEmail(invitation.getEmail()));
+                userService.addAuthority(user.getId(), Statics.ADMIN_ROLE);
+
+                return new ModelAndView("successPage")
+                        .addObject("message", "Welcome to the Mansa platform, You are now an admin.")
+                        .addObject("name", user.getLastName());
+            } else {
+
+                ModelAndView modelAndView = new ModelAndView("createAccountForm");
+                modelAndView.addObject("email", invitation.getEmail());
+                return modelAndView;
+            }
+
+        } catch (Exception e) {
+            log.error("Error verifying invitation: {}", e.getMessage(), e);
+            return new ModelAndView("error").addObject("message", "Invalid invitation token.");
         }
     }
 

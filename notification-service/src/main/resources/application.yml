@@ -22,6 +22,8 @@ spring:
           destination: VerificationAdminInvitation-topic
         consumeCredentialsEmail-in-0:
           destination: consumeCredentialsEmail-topic
+    function:
+      definition: consumeNotification;consumeVerificationEmail;consumeVerificationAdminInvitation;consumeCredentialsEmail
       kafka:
         binder:
           brokers: localhost:9092

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+  <style>
+      /* Global Reset */
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+
+  /* Style général du corps de la page */
+  body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f8f8;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+  }
+
+  /* Conteneur d'erreur */
+  .error-container {
+      text-align: center;
+      background-color: #fff;
+      border-radius: 15px;
+      padding: 40px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-in;
+  }
+
+  /* Animation d'apparition */
+  @keyframes fadeIn {
+      from {
+          opacity: 0;
+          transform: translateY(30px);
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+
+  /* Titre de l'erreur */
+  h1 {
+      font-size: 3rem;
+      color: #d32f2f;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+  }
+
+  /* Message d'erreur */
+  p {
+      font-size: 1.2rem;
+      color: #555;
+      line-height: 1.6;
+      margin-top: 10px;
+      font-style: italic;
+  }
+
+  /* Style de survol pour le conteneur */
+  .error-container:hover {
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Transition douce pour les changements d'état */
+  .error-container h1, .error-container p {
+      transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .error-container h1:hover {
+      color: #c2185b;
+      transform: scale(1.05);
+  }
+
+  .error-container p:hover {
+      color: #777;
+      transform: scale(1.02);
+  }
+
+  </style>
+</head>
+  <body>
+  <div class="error-container">
+    <h1>Error</h1>
+    <p th:text="${message}"></p>
+  </div>
+  </body>
+</html>

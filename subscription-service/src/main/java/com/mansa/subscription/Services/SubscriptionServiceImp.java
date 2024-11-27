@@ -39,7 +39,7 @@ public class SubscriptionServiceImp implements SubscriptionService{
         subscription.setStatus(Status.PENDING);
         subscription.setUserId(userFeign.getCurrentUser().getBody().getId());
         SubscriptionDto subscriptionDto1= mapper.toDto(subscriptionRepository.save(subscription));
-        subscriptionDto1.setUserDto(getById(subscriptionDto1.getId()).getUserDto());
+        subscriptionDto1.setUserDto(userFeign.userById(subscriptionById(subscriptionDto1.getId()).getUserId()).getBody());
         return subscriptionDto1;
     }
 

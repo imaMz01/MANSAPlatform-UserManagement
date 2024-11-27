@@ -41,7 +41,7 @@ public class UserController {
         return new ResponseEntity<>(userService.all(),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
+    @PreAuthorize("hasRole(@Statics.ADMIN_ROLE) or hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> userById(@PathVariable String id){
         return new ResponseEntity<>(userService.getById(id),HttpStatus.OK);

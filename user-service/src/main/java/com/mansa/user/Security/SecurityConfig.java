@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/api/login",
             "/api/users/verify/**",
             "/api/logout",
-            "/api/admin/invite/verify/**"
+            "/api/admin/invite/verify/**",
+            "/api/users/createInviteAccount"
     };
 
     private final UserRepository userRepository;

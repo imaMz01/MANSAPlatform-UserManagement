@@ -28,4 +28,5 @@ public interface UserService {
     boolean checkEmail(String email);
     User userByEmail(String email);
     String createAccount(String email);
+    public UserDto createInviteAccount(UserDto userDto);
 }

@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.net.WriteBuffer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -23,47 +24,47 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-//    @Bean
-//    public Consumer<EmailRequest> consumeNotification() {
-//        return message -> {
-//            try {
-//                System.out.println("Received notification :" + message.toString());
-//                sendNotification(message);
-//                System.out.println("Email sent successfully to " + message.getEmail());
-//            } catch (Exception e) {
-//                System.err.println("Failed to process email notification: " + e.getMessage());
-//            }
-//
-//        };
-//    }
-//
-//    @Bean
-//    public Consumer<EmailVerificationRequest> consumeVerificationEmail() {
-//        return message -> {
-//            try {
-//                System.out.println("Received notification :" + message.toString());
-//                sendVerificationEmail(message);
-//                System.out.println("Email sent successfully to " + message.getEmail());
-//            } catch (Exception e) {
-//                System.err.println("Failed to process email verification: " + e.getMessage());
-//            }
-//
-//        };
-//    }
+    @Bean
+    public Consumer<EmailRequest> consumeNotification() {
+        return message -> {
+            try {
+                System.out.println("Received notification :" + message.toString());
+                sendNotification(message);
+                System.out.println("Email sent successfully to " + message.getEmail());
+            } catch (Exception e) {
+                System.err.println("Failed to process email notification: " + e.getMessage());
+            }
 
-//    @Bean
-//    public Consumer<EmailVerificationRequest> consumeVerificationAdminInvitation() {
-//        return message -> {
-//            try {
-//                System.out.println("Received notification :" + message.toString());
-//                sendAdminInvitation(message);
-//                System.out.println("Email sent successfully to " + message.getEmail());
-//            } catch (Exception e) {
-//                System.err.println("Failed to process email notification: " + e.getMessage());
-//            }
-//
-//        };
-//    }
+        };
+    }
+
+    @Bean
+    public Consumer<EmailVerificationRequest> consumeVerificationEmail() {
+        return message -> {
+            try {
+                System.out.println("Received notification :" + message.toString());
+                sendVerificationEmail(message);
+                System.out.println("Email sent successfully to " + message.getEmail());
+            } catch (Exception e) {
+                System.err.println("Failed to process email verification: " + e.getMessage());
+            }
+
+        };
+    }
+
+    @Bean
+    public Consumer<EmailVerificationRequest> consumeVerificationAdminInvitation() {
+        return message -> {
+            try {
+                System.out.println("Received notification :" + message.toString());
+                sendAdminInvitation(message);
+                System.out.println("Email sent successfully to " + message.getEmail());
+            } catch (Exception e) {
+                System.err.println("Failed to process email notification: " + e.getMessage());
+            }
+
+        };
+    }
 
     @Bean
     public Consumer<SignInRequest> consumeCredentialsEmail() {

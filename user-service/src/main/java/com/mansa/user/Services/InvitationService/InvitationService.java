@@ -15,4 +15,5 @@ public interface InvitationService {
     String verifyInvitation(String token);
     List<InvitationDto> adminInvitations();
     void generateAdminInvitationVerificationTokenAndSendEmail(String id, String email);
+    public ModelAndView verifyInvit(String token);
 }

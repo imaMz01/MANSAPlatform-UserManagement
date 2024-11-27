@@ -36,6 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import static com.mansa.user.Mappers.RoleMapper.roleMapper;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -69,7 +71,7 @@ public class UserServiceImp implements UserService {
             user.setRoles(new HashSet<>());
         }
         RoleDto roleDto = roleService.getByRole(Statics.DEFAULT_ROLE);
-        if(roleDto != null) user.getRoles().add(RoleMapper.roleMapper.toEntity(roleDto));
+        if(roleDto != null) user.getRoles().add(roleMapper.toEntity(roleDto));
         return userMapper.toDto(
                 userRepository.save(user)
         );
@@ -81,8 +83,23 @@ public class UserServiceImp implements UserService {
     @Override
     public User userByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(
-
+                ()->new UserWithEmailNotFoundException(email)
         );
+    }
+
+    @Override
+    public UserDto createInviteAccount(UserDto userDto) {
+        User user = userMapper.toEntity(userDto);
+        user.setId(UUID.randomUUID().toString());
+        user.setEnabled(true);
+        user.setEmailVerified(true);
+        user.setCreated(LocalDateTime.now());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(roleMapper.toEntity(roleService.getByRole(Statics.ADMIN_ROLE)));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
@@ -93,6 +110,7 @@ public class UserServiceImp implements UserService {
         user.setEnabled(true);
         user.setCreated(LocalDateTime.now());
         user.setEmail(email);
+        user.setCreated(LocalDateTime.now());
         String password = PasswordGenerator.generatePassword(10);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
@@ -253,11 +271,11 @@ public class UserServiceImp implements UserService {
         User user = getUser(id);
         RoleDto roleDto = roleService.getByRole(role);
         if(roleDto != null){
-            Role roleEntity = RoleMapper.roleMapper.toEntity(roleDto);
-            if(user.getRoles().stream().anyMatch(
-                    role1 -> role1.getId().equals(roleEntity.getId())
-            ))
-                throw new UserHasAlreadyThisRoleExistException(id,roleEntity.getRole());
+            Role roleEntity = roleMapper.toEntity(roleDto);
+//            if(user.getRoles().stream().anyMatch(
+//                    role1 -> role1.getId().equals(roleEntity.getId())
+//            ))
+//                throw new UserHasAlreadyThisRoleExistException(id,roleEntity.getRole());
             user.getRoles().add(roleEntity);
         }
 
@@ -273,7 +291,7 @@ public class UserServiceImp implements UserService {
         RoleDto roleDto = roleService.getByRole(role);
         log.info("roles --------------> {}",user.getRoles().size());
         if(roleDto != null){
-            Role roleEntity = RoleMapper.roleMapper.toEntity(roleDto);
+            Role roleEntity = roleMapper.toEntity(roleDto);
             user.getRoles().removeIf( role1 -> role1.getId().equals(roleEntity.getId()));
         }
 
