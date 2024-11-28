@@ -15,13 +15,7 @@ import lombok.Setter;
 public class ErrorResponse {
     private int status;
     private String message;
-    private String stackTrace;
-    private String error;
 
-    public ErrorResponse(int i, String message) {
-        this.status = i;
-        this.message = message;
-    }
 
     public String convertToJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
