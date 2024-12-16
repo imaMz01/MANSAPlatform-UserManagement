@@ -17,7 +17,7 @@ public interface UserService {
     List<UserDto> all();
     UserDto changeStatus(String id);
     UserDto getById(String id);
-    JwtAuthenticationResponse signIn(SignInRequest request);
+    JwtAuthenticationResponse signIn(SignInRequest request) throws Exception;
     void logout(HttpServletRequest request, HttpServletResponse response);
     String generateEmailVerificationTokenAndSendEmail(String id);
     String verifyEmail(String token);

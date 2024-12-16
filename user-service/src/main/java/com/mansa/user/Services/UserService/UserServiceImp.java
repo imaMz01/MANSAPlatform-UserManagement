@@ -156,7 +156,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public JwtAuthenticationResponse signIn(SignInRequest request) {
+    public JwtAuthenticationResponse signIn(SignInRequest request) throws Exception {
 
         // Find user by email
         User user = userRepository.findByEmailIgnoreCase(request.getEmail())
@@ -171,9 +171,6 @@ public class UserServiceImp implements UserService {
         log.info("User authenticated");
 
         log.info("User found: {}", user.getEmail());
-        // Check if 2FA is enabled
-
-        // If 2FA is not enabled, proceed with generating tokens
         String jwt = jwtTokenProvider.generateAccessToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
