@@ -21,6 +21,7 @@
         <module>notification-service</module>
         <module>gateway-service</module>
         <module>discovery-server</module>
+        <module>company-service</module>
     </modules>
 
     <properties>

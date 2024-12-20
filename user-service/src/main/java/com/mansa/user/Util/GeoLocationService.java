@@ -11,15 +11,15 @@ public class GeoLocationService {
 
     private final static String GEOLOCATION_API_URL = "http://ip-api.com/json/";
 
-    public GeoLocation getAddress(String ip){
+    public String getAddress(String ip){
         RestTemplate restTemplate = new RestTemplate();
         String url = GEOLOCATION_API_URL + ip;
         try {
             GeoLocation response = restTemplate.getForObject(url, GeoLocation.class);
-            return response!=null && response.getStatus().equals("success") ? response : null;
+            return response!=null && response.getStatus().equals("success") ? response.getCountry()+","+response.getRegionName()+","+response.getCity() : "Unknown";
         }catch (Exception e){
             log.error("error :{}",e.getMessage());
-            return null;
+            return "Unknown";
         }
     }
 }

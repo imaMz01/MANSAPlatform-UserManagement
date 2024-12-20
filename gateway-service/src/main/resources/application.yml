@@ -25,9 +25,9 @@ spring:
         uri: lb://user-service
         predicates[0]: Path=/api/**
       routes[1]:
-        id: authorization-service
-        uri: lb://authorization-service
-        predicates[0]: Path=/authorization/**
+        id: company-service
+        uri: lb://company-service
+        predicates[0]: Path=/Company/**
       routes[2]:
         id: subscription-service
         uri: lb://subscription-service
