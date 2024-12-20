@@ -58,3 +58,10 @@ token:
   expiration:
     access-token: 1200000
     refresh-token: 3600000
+logging:
+  level:
+    root: INFO
+    com:
+      Custom:
+        Annotation:
+          Aspect: DEBUG

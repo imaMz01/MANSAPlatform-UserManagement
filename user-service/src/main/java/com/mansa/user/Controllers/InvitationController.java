@@ -1,6 +1,7 @@
 package com.mansa.user.Controllers;
 
 
+import com.mansa.user.Annotations.RequestLogger;
 import com.mansa.user.Dtos.InvitationDto;
 import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Services.InvitationService.InvitationService;
@@ -27,6 +28,7 @@ public class InvitationController {
     private final InvitationService invitationService;
     private final UserService userService;
 
+    @RequestLogger(action = "invite admin")
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PostMapping("/admin/invite")
     public ResponseEntity<InvitationDto> inviteAdmin(@Valid @RequestBody InvitationDto invitationDto){
@@ -75,18 +77,21 @@ public class InvitationController {
         }
     }
 
+    @RequestLogger(action = "all invitations")
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @GetMapping("/admin/invitations")
     public ResponseEntity<List<InvitationDto>> invitations(){
         return new ResponseEntity<>(invitationService.invitations(),HttpStatus.OK);
     }
 
+    @RequestLogger(action = "admin invitations")
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @GetMapping("/admin/adminInvitations")
     public ResponseEntity<List<InvitationDto>> adminInvitations(){
         return new ResponseEntity<>(invitationService.adminInvitations(),HttpStatus.OK);
     }
 
+    @RequestLogger(action = "invitation by admin")
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @GetMapping("/admin/inviteById/{id}")
     public ResponseEntity<InvitationDto> inviteById(@PathVariable String id){
