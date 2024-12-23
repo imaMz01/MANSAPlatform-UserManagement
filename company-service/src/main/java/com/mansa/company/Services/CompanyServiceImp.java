@@ -2,6 +2,7 @@ package com.mansa.company.Services;
 
 
 import com.mansa.company.Dtos.CompanyDto;
+import com.mansa.company.Dtos.UserDto;
 import com.mansa.company.Entities.Company;
 import com.mansa.company.Exceptions.CompanyAlreadyExistException;
 import com.mansa.company.FeignClient.UserFeign;
@@ -73,5 +74,10 @@ public class CompanyServiceImp implements CompanyService{
     @Override
     public CompanyDto companyById(String id) {
         return getCompanyDto(getById(id));
+    }
+
+    @Override
+    public List<UserDto> usersByCompany(String name) {
+        return userFeign.usersCompany(name).getBody();
     }
 }

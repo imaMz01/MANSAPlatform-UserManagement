@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Invitation</title>
+    <title>Invitation</title>
     <style>
         /* Global styles */
         body {
@@ -76,13 +76,33 @@
 <body>
 <div class="container">
     <h2>Hello,</h2>
-    <p>
+    <p th:if="${type == 'ADMIN_INVITATION'}">
         We are excited to invite you to become an administrator of our application.<br>
         To accept the invitation, simply click the button below:<br><br>
         <a th:href="'http://localhost:8081/api/admin/invite/verify/' + ${token}" target="_blank">
             Accept Invitation
         </a><br><br>
         We look forward to your participation.<br><br>
+        Best regards,<br>
+    </p>
+    <p th:if="${type == 'CHECKER_INVITATION'}">
+        We are excited to invite you to become a Checker of our application.<br>
+        As a Checker, you will be responsible for reviewing and validating the data on our platform to ensure its accuracy and quality.<br><br>
+        To accept the invitation, simply click the button below:<br><br>
+        <a th:href="'http://localhost:8081/api/checker/invite/verify/' + ${token}" target="_blank">
+            Accept Invitation
+        </a><br><br>
+        We look forward to your important contributions in ensuring data quality.<br><br>
+        Best regards,<br>
+    </p>
+    <p th:if="${type == 'MAKER_INVITATION'}">
+        We are excited to invite you to become a Data Maker in our application.<br>
+        As a Data Maker, you will have the opportunity to contribute valuable data to enhance our platform.<br><br>
+        To accept the invitation, simply click the button below:<br><br>
+        <a th:href="'http://localhost:8081/api/data-maker/invite/verify/' + ${token}" target="_blank">
+            Accept Invitation
+        </a><br><br>
+        We look forward to your valuable contributions.<br><br>
         Best regards,<br>
     </p>
 </div>

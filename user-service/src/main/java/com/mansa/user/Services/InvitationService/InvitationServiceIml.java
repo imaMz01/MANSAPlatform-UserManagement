@@ -5,7 +5,7 @@ import com.mansa.user.Dtos.SignInRequest;
 import com.mansa.user.Dtos.UserDto;
 import com.mansa.user.Dtos.VerificationRequest;
 import com.mansa.user.Entities.Invitation;
-import com.mansa.user.Entities.User;
+import com.mansa.user.Enums.InvitationType;
 import com.mansa.user.Exceptions.*;
 import com.mansa.user.Mappers.InvitationMapper;
 import com.mansa.user.Mappers.UserMapper;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -43,16 +42,27 @@ public class InvitationServiceIml implements InvitationService{
 
     @Override
     @Transactional
-    public InvitationDto sendInvitation(InvitationDto invitationDto) {
+    public InvitationDto sendInvitation(InvitationDto invitationDto, InvitationType type) {
         Invitation invitation = mapper.toEntity(invitationDto);
-        if(userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+        if(type.equals(InvitationType.ADMIN_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
                 role1 -> role1.getRole().equals(Statics.ADMIN_ROLE)
         ))
             throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.ADMIN_ROLE);
+        if(type.equals(InvitationType.MAKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+                role1 -> role1.getRole().equals(Statics.MAKER_ROLE)
+        ))
+            throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.MAKER_ROLE);
+
+        if(type.equals(InvitationType.CHECKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+                role1 -> role1.getRole().equals(Statics.CHECKER_ROLE)
+        ))
+            throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.CHECKER_ROLE);
+
         invitation.setId(UUID.randomUUID().toString());
         invitation.setInvitedBy(userMapper.toEntity(userService.getCurrentUser()));
+        invitation.setType(type);
         InvitationDto invitationSaved = mapper.toDto(invitationRepository.save(invitation));
-        generateAdminInvitationVerificationTokenAndSendEmail(invitationSaved.getId(),invitationSaved.getEmail());
+        this.generateInvitationVerificationTokenAndSendEmail(invitationSaved.getId(),invitationSaved.getEmail(),invitationSaved.getType().toString());
         return invitationSaved;
     }
 
@@ -153,9 +163,9 @@ public class InvitationServiceIml implements InvitationService{
     }
 
     @Override
-    public void generateAdminInvitationVerificationTokenAndSendEmail(String id,String email) {
-        String token = jwtTokenProvider.generateAdminInvitationVerificationToken(id);
-        VerificationRequest request = new VerificationRequest("",email,token);
+    public void generateInvitationVerificationTokenAndSendEmail(String id,String email,String type) {
+        String token = jwtTokenProvider.generateInvitationVerificationToken(id);
+        VerificationRequest request = new VerificationRequest("",email,token,type);
         streamBridge.send("VerificationAdminInvitation-topic",request);
     }
 

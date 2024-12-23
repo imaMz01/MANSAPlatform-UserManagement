@@ -41,6 +41,7 @@ public class User implements UserDetails {
     private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private String companyName;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();

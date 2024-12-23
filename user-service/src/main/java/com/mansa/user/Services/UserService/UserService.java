@@ -29,4 +29,5 @@ public interface UserService {
     User userByEmail(String email);
     String createAccount(String email);
     public UserDto createInviteAccount(UserDto userDto);
+    List<UserDto> usersByCompany(String name);
 }

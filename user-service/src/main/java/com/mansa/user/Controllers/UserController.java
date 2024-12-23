@@ -120,4 +120,11 @@ public class UserController {
     public ResponseEntity<List<SubscriptionDto>> userSubscriptions(){
         return new ResponseEntity<>(userService.userSubscriptions(),HttpStatus.OK);
     }
+
+    @RequestLogger(action = "get users by company")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
+    @GetMapping("/usersCompany/{name}")
+    public ResponseEntity<List<UserDto>> usersCompany(@PathVariable String name){
+        return new ResponseEntity<>(userService.usersByCompany(name),HttpStatus.OK);
+    }
 }

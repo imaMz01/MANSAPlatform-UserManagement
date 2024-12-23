@@ -42,5 +42,6 @@ public class UserDto {
     private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private String companyName;
     private Set<RoleDto> roles;
 }

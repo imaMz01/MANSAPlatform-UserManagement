@@ -1,6 +1,7 @@
 package com.mansa.user.Entities;
 
 
+import com.mansa.user.Enums.InvitationType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,8 @@ public class Invitation {
     private boolean accepted;
     @ManyToOne
     private User invitedBy;
+    @Enumerated(EnumType.STRING)
+    private InvitationType type;
     private LocalDateTime createdAt;
     @PrePersist
     protected void onCreate(){

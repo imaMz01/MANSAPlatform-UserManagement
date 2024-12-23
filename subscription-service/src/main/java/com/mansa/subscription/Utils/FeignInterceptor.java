@@ -26,6 +26,15 @@ public class FeignInterceptor implements RequestInterceptor {
                 // Log si l'en-tête Authorization est manquant
                 System.out.println("Authorization header is missing.");
             }
+            String xForwardedFor = httpServletRequest.getHeader("X-Forwarded-For");
+            if (xForwardedFor != null) {
+                // Log pour vérifier l'en-tête X-Forwarded-For
+                System.out.println("X-Forwarded-For: " + xForwardedFor);
+                template.header("X-Forwarded-For", xForwardedFor);
+            } else {
+                // Si l'en-tête X-Forwarded-For est manquant
+                System.out.println("X-Forwarded-For header is missing.");
+            }
         }
     }
 }

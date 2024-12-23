@@ -57,7 +57,7 @@ public class EmailService {
         return message -> {
             try {
                 System.out.println("Received notification :" + message.toString());
-                sendAdminInvitation(message);
+                sendInvitation(message);
                 System.out.println("Email sent successfully to " + message.getEmail());
             } catch (Exception e) {
                 System.err.println("Failed to process email notification: " + e.getMessage());
@@ -104,11 +104,13 @@ public class EmailService {
         sendEmail(request.getEmail(), context,"Your Account Login Information","credentialsEmail");
     }
 
-    public void sendAdminInvitation(EmailVerificationRequest emailRequest) throws MessagingException {
+    public void sendInvitation(EmailVerificationRequest emailRequest) throws MessagingException {
 
         Context context = new Context();
         context.setVariable("token", emailRequest.getToken());
-        sendEmail(emailRequest.getEmail(), context,"Admin Invitation","AdminInvitationEmail");
+        context.setVariable("lastName", emailRequest.getLastName());
+        context.setVariable("type", emailRequest.getType());
+        sendEmail(emailRequest.getEmail(), context,"Invitation","AdminInvitationEmail");
     }
 
     private void sendEmail(String to, Context context,String subject, String template) throws MessagingException {

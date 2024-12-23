@@ -128,7 +128,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateAdminInvitationVerificationToken(String id){
+    public String generateInvitationVerificationToken(String id){
         return Jwts.builder()
                 .setSubject(id)
                 .setIssuedAt(new Date())

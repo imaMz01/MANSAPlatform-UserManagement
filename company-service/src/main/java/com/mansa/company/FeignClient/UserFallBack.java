@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 @Component
@@ -23,6 +24,14 @@ public class UserFallBack implements FallbackFactory<UserFeign> {
             }
             @Override
             public ResponseEntity<UserDto> getCurrentUser(){
+                if(cause instanceof FeignException.ServiceUnavailable ||
+                        cause instanceof TimeoutException)
+                    throw new FailedToFindService();
+                throw new RuntimeException(cause);
+            }
+
+            @Override
+            public ResponseEntity<List<UserDto>> usersCompany(String name) {
                 if(cause instanceof FeignException.ServiceUnavailable ||
                         cause instanceof TimeoutException)
                     throw new FailedToFindService();

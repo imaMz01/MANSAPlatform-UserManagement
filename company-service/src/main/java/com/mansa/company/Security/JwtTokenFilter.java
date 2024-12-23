@@ -41,14 +41,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 log.info("userEmail userEmail" + userEmail);
                 if (Boolean.TRUE.equals(jwtTokenProvider.isTokenValid(token))){
-//                    Collection<? extends GrantedAuthority> authorities = jwtTokenProvider.extractRoles(token)
-//                            .stream()
-//                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-//                            .collect(Collectors.toList());
+                    Collection<? extends GrantedAuthority> authorities = jwtTokenProvider.extractRoles(token)
+                            .stream()
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                            .collect(Collectors.toList());
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userEmail,
                             null,
-                            null
+                            authorities
                     );
                     authenticationToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request));

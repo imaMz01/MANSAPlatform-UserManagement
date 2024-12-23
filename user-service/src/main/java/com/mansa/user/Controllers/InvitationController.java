@@ -4,6 +4,7 @@ package com.mansa.user.Controllers;
 import com.mansa.user.Annotations.RequestLogger;
 import com.mansa.user.Dtos.InvitationDto;
 import com.mansa.user.Dtos.UserDto;
+import com.mansa.user.Enums.InvitationType;
 import com.mansa.user.Services.InvitationService.InvitationService;
 import com.mansa.user.Services.UserService.UserService;
 import jakarta.validation.Valid;
@@ -32,8 +33,20 @@ public class InvitationController {
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
     @PostMapping("/admin/invite")
     public ResponseEntity<InvitationDto> inviteAdmin(@Valid @RequestBody InvitationDto invitationDto){
-        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto, InvitationType.ADMIN_INVITATION), HttpStatus.CREATED);
     }
+
+    @RequestLogger(action = "invite maker or checker")
+    @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
+    @PostMapping("/invite/{type}")
+    public ResponseEntity<InvitationDto> inviteMakerOrChecker(@Valid @RequestBody InvitationDto invitationDto,@PathVariable InvitationType type){
+        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto, type), HttpStatus.CREATED);
+    }
+
+//    @PostMapping("/checker/invite")
+//    public ResponseEntity<InvitationDto> inviteChecker(@Valid @RequestBody InvitationDto invitationDto){
+//        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto, InvitationType.CHECKER_INVITATION), HttpStatus.CREATED);
+//    }
 
     @GetMapping("/admin/invite/verify/{token}")
     public ResponseEntity<String> verifyAdminInvitation(@PathVariable String token){

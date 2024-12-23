@@ -5,7 +5,6 @@ import com.mansa.user.Entities.Role;
 import com.mansa.user.Entities.User;
 import com.mansa.user.Exceptions.*;
 import com.mansa.user.FeignClient.SubscriptionFeign;
-import com.mansa.user.Mappers.RoleMapper;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;
@@ -67,6 +66,8 @@ public class UserServiceImp implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(false);
         user.setEmailVerified(false);
+        if(userDto.getCompanyName() == null)
+            user.setCompanyName("");
         if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
@@ -103,6 +104,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public List<UserDto> usersByCompany(String name) {
+        return userMapper.toDto(userRepository.findByCompanyNameIgnoreCase(name));
+    }
+
+    @Override
     public String createAccount(String email) {
         User user = new User();
         user.setId(UUID.randomUUID().toString());
@@ -128,6 +134,7 @@ public class UserServiceImp implements UserService {
         user.setAddress(userDto.getAddress());
         user.setCreated(userDto.getCreated());
         user.setUpdated(LocalDateTime.now());
+        user.setCompanyName(userDto.getCompanyName());
         return userMapper.toDto(
                 userRepository.save(user)
         );
@@ -213,7 +220,7 @@ public class UserServiceImp implements UserService {
     public String generateEmailVerificationTokenAndSendEmail(String id) {
         String token= jwtTokenProvider.generateEmailVerificationToken(id);
         VerificationRequest request = new VerificationRequest(getUser(id).getLastName(),
-                getUser(id).getEmail(),token);
+                getUser(id).getEmail(),token,"");
         streamBridge.send("VerificationEmail-topic",request);
         return token;
     }

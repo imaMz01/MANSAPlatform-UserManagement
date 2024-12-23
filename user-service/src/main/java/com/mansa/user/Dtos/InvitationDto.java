@@ -1,5 +1,6 @@
 package com.mansa.user.Dtos;
 
+import com.mansa.user.Enums.InvitationType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class InvitationDto {
     private String email;
     private boolean accepted;
     private UserDto invitedBy;
+    private InvitationType type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
