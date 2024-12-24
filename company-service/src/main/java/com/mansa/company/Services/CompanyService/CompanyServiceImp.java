@@ -1,15 +1,15 @@
-package com.mansa.company.Services;
+package com.mansa.company.Services.CompanyService;
 
 
 import com.mansa.company.Dtos.CompanyDto;
 import com.mansa.company.Dtos.UserDto;
 import com.mansa.company.Entities.Company;
 import com.mansa.company.Exceptions.CompanyAlreadyExistException;
+import com.mansa.company.Exceptions.CompanyNotFountException;
 import com.mansa.company.FeignClient.UserFeign;
 import com.mansa.company.Mappers.CompanyMapper;
 import com.mansa.company.Repositories.CompanyRepository;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CompanyServiceImp implements CompanyService{
+public class CompanyServiceImp implements CompanyService {
 
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
@@ -25,7 +25,7 @@ public class CompanyServiceImp implements CompanyService{
 
     @Override
     public CompanyDto add(CompanyDto companyDto) {
-        if(companyRepository.findByName(companyDto.getName()).isPresent())
+        if(companyRepository.findByNameIgnoreCase(companyDto.getName()).isPresent())
             throw new CompanyAlreadyExistException(companyDto.getName());
         Company company =companyMapper.toEntity(companyDto);
         company.setId(UUID.randomUUID().toString());
@@ -33,7 +33,7 @@ public class CompanyServiceImp implements CompanyService{
         return getCompanyDto(companyRepository.save(company));
     }
 
-    @NotNull
+
     private CompanyDto getCompanyDto(Company company) {
         CompanyDto savedDto = companyMapper.toDto(company);
         savedDto.setCreatedBy(userFeign.userById(company.getUserId()).getBody());
@@ -52,7 +52,7 @@ public class CompanyServiceImp implements CompanyService{
     public CompanyDto update(CompanyDto companyDto) {
         Company company = getById(companyDto.getId());
         if(!company.getName().equals(companyDto.getName())
-                && companyRepository.findByName(companyDto.getName()).isPresent())
+                && companyRepository.findByNameIgnoreCase(companyDto.getName()).isPresent())
             throw new CompanyAlreadyExistException(companyDto.getName());
         company.setName(companyDto.getName());
         company.setDescription(companyDto.getDescription());
@@ -67,7 +67,7 @@ public class CompanyServiceImp implements CompanyService{
     }
 
     public Company getById(String id) {
-        return companyRepository.findById(id).orElseThrow(()-> new CompanyAlreadyExistException("id "+id));
+        return companyRepository.findById(id).orElseThrow(()-> new CompanyNotFountException("id "+id));
     }
 
 
@@ -79,5 +79,10 @@ public class CompanyServiceImp implements CompanyService{
     @Override
     public List<UserDto> usersByCompany(String name) {
         return userFeign.usersCompany(name).getBody();
+    }
+
+    @Override
+    public CompanyDto companyByName(String name) {
+        return getCompanyDto(companyRepository.findByNameIgnoreCase(name).orElseThrow(()-> new CompanyNotFountException("name "+name)));
     }
 }

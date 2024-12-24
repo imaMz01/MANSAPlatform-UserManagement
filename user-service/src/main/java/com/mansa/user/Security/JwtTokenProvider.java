@@ -128,9 +128,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateInvitationVerificationToken(String id){
+    public String generateInvitationVerificationToken(String id,String type){
         return Jwts.builder()
                 .setSubject(id)
+                .claim("type",type)
                 .setIssuedAt(new Date())
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();

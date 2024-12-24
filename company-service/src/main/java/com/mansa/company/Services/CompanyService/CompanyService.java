@@ -1,4 +1,4 @@
-package com.mansa.company.Services;
+package com.mansa.company.Services.CompanyService;
 
 import com.mansa.company.Dtos.CompanyDto;
 import com.mansa.company.Dtos.UserDto;
@@ -12,5 +12,5 @@ public interface CompanyService {
     CompanyDto update(CompanyDto companyDto);
     CompanyDto companyById(String id);
     List<UserDto> usersByCompany(String name);
-
+    CompanyDto companyByName(String name);
 }

@@ -1,4 +1,5 @@
 package com.mansa.company.Dtos;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class UserDto {
 
     private String id;
@@ -23,4 +25,5 @@ public class UserDto {
     private boolean emailVerified;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private String companyName;
 }

@@ -156,6 +156,38 @@ public class InvitationServiceIml implements InvitationService{
     }
 
     @Override
+    public String verify(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+            String type = claims.get("type",String.class);
+            String id = claims.getSubject();
+            Invitation invitation = getById(id);
+            log.info("invitation : {}",invitation.toString());
+            if(invitation.isAccepted()){
+                throw new InvitationAlreadyAcceptedException();
+            }
+            if (userService.checkEmail(invitation.getEmail())) {
+                UserDto user = userMapper.toDto(userService.userByEmail(invitation.getEmail()));
+                if(type.equals(InvitationType.MAKER_INVITATION.toString())) {
+                    userService.addAuthority(user.getId(), Statics.MAKER_ROLE);
+                    return "You're a maker now";
+                }
+                else if(type.equals(InvitationType.CHECKER_INVITATION.toString())) {
+                    userService.addAuthority(user.getId(), Statics.CHECKER_ROLE);
+                    return "You're a checker now";
+                }
+            }
+            } catch (Exception e) {
+            log.info("error : {}",e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+        return "Error verifying invitation";
+    }
+
+    @Override
     public List<InvitationDto> adminInvitations() {
         return mapper.toDto(invitationRepository.findByInvitedBy(
                 userMapper.toEntity(userService.getCurrentUser())
@@ -164,7 +196,7 @@ public class InvitationServiceIml implements InvitationService{
 
     @Override
     public void generateInvitationVerificationTokenAndSendEmail(String id,String email,String type) {
-        String token = jwtTokenProvider.generateInvitationVerificationToken(id);
+        String token = jwtTokenProvider.generateInvitationVerificationToken(id,type);
         VerificationRequest request = new VerificationRequest("",email,token,type);
         streamBridge.send("VerificationAdminInvitation-topic",request);
     }

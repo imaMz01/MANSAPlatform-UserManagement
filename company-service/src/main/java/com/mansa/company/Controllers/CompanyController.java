@@ -2,7 +2,7 @@ package com.mansa.company.Controllers;
 
 import com.mansa.company.Dtos.CompanyDto;
 import com.mansa.company.Dtos.UserDto;
-import com.mansa.company.Services.CompanyService;
+import com.mansa.company.Services.CompanyService.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

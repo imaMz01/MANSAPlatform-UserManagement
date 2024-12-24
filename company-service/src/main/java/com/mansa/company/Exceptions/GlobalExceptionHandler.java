@@ -36,6 +36,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, status);
     }
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<String> handleDataNotFound(DataNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CheckerAndMakerAreIdenticalException.class)
+    public ResponseEntity<String> handleCheckerAndMakerAreIdentical(CheckerAndMakerAreIdenticalException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

@@ -53,6 +53,11 @@ public class InvitationController {
         return new ResponseEntity<>(invitationService.verifyInvitation(token),HttpStatus.OK);
     }
 
+    @GetMapping("/invite/verify/{token}")
+    public ResponseEntity<String> verifyMakerOrCheckerInvitation(@PathVariable String token){
+        return new ResponseEntity<>(invitationService.verify(token),HttpStatus.OK);
+    }
+
 //    @GetMapping("/admin/invite/verify/{token}")
 //    public ModelAndView verifyInvitation(@PathVariable("token") String token) {
 //        return invitationService.verifyInvit(token);

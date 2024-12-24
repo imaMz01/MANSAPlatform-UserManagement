@@ -1,6 +1,7 @@
 package com.mansa.company.Entities;
 
 import com.mansa.company.Enums.Type;
+import com.mansa.company.Utils.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,12 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class Company {
+public class Company extends AbstractEntity {
 
-    @Id
-    private String id;
     private String name;
     @Enumerated(EnumType.STRING)
     private Type type;
@@ -34,8 +32,4 @@ public class Company {
     private LocalDate creationDate;
     private String ca;
     private String userId;
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }
