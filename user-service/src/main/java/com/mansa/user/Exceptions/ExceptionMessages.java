@@ -19,6 +19,7 @@ public enum ExceptionMessages {
     USER_NOT_FOUND("User with id %s not found"),
     USER_WITH_EMAIL_NOT_FOUND("User with email %s not found"),
     YOUR_TOKEN_EXPIRED("Your token has expired."),
+    CHECKER_AND_MAKER_ARE_IDENTICAL("You cannot act as both the maker and the checker for the same data."),
     ACCESS_DENIED("You do not have permission to access this resource."),
     ROLE_ALREADY_EXIST("Role %s already exist");
 

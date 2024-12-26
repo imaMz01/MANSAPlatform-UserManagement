@@ -12,4 +12,6 @@ public interface DataService {
     DataDto publishData(String id);
     DataDto dataById(String id);
     DataDto update(DataDto dataDto);
+    List<DataDto> dataCompany(String name);
+    String assignCheckerToData(String idData, String idChecker);
 }

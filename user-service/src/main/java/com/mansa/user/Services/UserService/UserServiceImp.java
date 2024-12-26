@@ -4,7 +4,7 @@ import com.mansa.user.Dtos.*;
 import com.mansa.user.Entities.Role;
 import com.mansa.user.Entities.User;
 import com.mansa.user.Exceptions.*;
-import com.mansa.user.FeignClient.SubscriptionFeign;
+import com.mansa.user.FeignClient.SubscriptionFeign.SubscriptionFeign;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.UserRepository;
 import com.mansa.user.Security.JwtTokenProvider;

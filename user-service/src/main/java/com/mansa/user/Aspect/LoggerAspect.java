@@ -45,7 +45,8 @@ public class LoggerAspect {
         log.info("action : {}",requestLogger.action());
         Object object = joinPoint.proceed();
         String ip = request.getHeader("X-Forwarded-For");
-        ip = ip.split(",")[0].trim();
+        if(ip != null)
+            ip = ip.split(",")[0].trim();
         String address = geoLocationService.getAddress(ip);
         User user = null;
         if(requestLogger.action().equals("login") || requestLogger.action().equals("register"))

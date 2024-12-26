@@ -46,6 +46,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(YouAreNotAuthorizedException.class)
+    public ResponseEntity<String> handleYouAreNotAuthorized(YouAreNotAuthorizedException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();

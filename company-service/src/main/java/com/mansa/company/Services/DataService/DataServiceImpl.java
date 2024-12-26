@@ -5,14 +5,16 @@ import com.mansa.company.Dtos.DataDto;
 import com.mansa.company.Dtos.UserDto;
 import com.mansa.company.Entities.Company;
 import com.mansa.company.Entities.Data;
-import com.mansa.company.Exceptions.CheckerAndMakerAreIdenticalException;
+import com.mansa.company.Enums.Type;
 import com.mansa.company.Exceptions.DataNotFoundException;
+import com.mansa.company.Exceptions.YouAreNotAuthorizedException;
 import com.mansa.company.FeignClient.UserFeign;
 import com.mansa.company.Mappers.CompanyMapper;
 import com.mansa.company.Mappers.DataMapper;
 import com.mansa.company.Repositories.DataRepository;
 import com.mansa.company.Services.CompanyService.CompanyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DataServiceImpl implements DataService {
 
     private final DataRepository dataRepository;
@@ -36,10 +39,16 @@ public class DataServiceImpl implements DataService {
         if(maker == null){
             return null;
         }
+        Company company = companyMapper.toEntity(companyService.companyByName(maker.getCompanyName()));
         Data data = dataMapper.toEntity(dataDto);
         data.setId(UUID.randomUUID().toString());
         data.setIdMaker(maker.getId());
-        data.setCompany(companyMapper.toEntity(companyService.companyByName(maker.getCompanyName())));
+        if(company.getType().equals(Type.CONTRIBUTOR))
+            data.setCompany(company);
+        else if (company.getType().equals(Type.AGENT)){
+            company=companyMapper.toEntity(companyService.companyByName(data.getCompany().getName()));
+            data.setCompany(company);
+        }
         return getDataDto(dataRepository.save(data));
     }
 
@@ -85,11 +94,14 @@ public class DataServiceImpl implements DataService {
             return null;
         }
         Data data = getById(id);
-        if(checker.getId().equals(data.getIdMaker()))
-            throw new CheckerAndMakerAreIdenticalException();
-        data.setIdChecker(checker.getId());
-        data.setChecked(true);
-        return getDataDto(dataRepository.save(data));
+//        if(checker.getId().equals(data.getIdMaker()))
+//            throw new CheckerAndMakerAreIdenticalException();
+        if(data.getIdChecker().equals(checker.getId())) {
+            data.setChecked(true);
+            return getDataDto(dataRepository.save(data));
+        }else
+            throw new YouAreNotAuthorizedException();
+
     }
 
     @Override
@@ -111,8 +123,34 @@ public class DataServiceImpl implements DataService {
 
     @Override
     public DataDto update(DataDto dataDto) {
+        UserDto checker = userFeign.getCurrentUser().getBody();
+        if(checker == null){
+            return null;
+        }
         Data data = getById(dataDto.getId());
-        data.setDescription(dataDto.getDescription());
-        return getDataDto(dataRepository.save(data));
+        if(data.getIdMaker().equals(checker.getId())) {
+            data.setDescription(dataDto.getDescription());
+            return getDataDto(dataRepository.save(data));
+        }else
+            throw new YouAreNotAuthorizedException();
+    }
+
+    @Override
+    public List<DataDto> dataCompany(String name) {
+        return dataRepository.findByCompany(
+                companyMapper.toEntity(companyService.companyByName(name)))
+                .stream()
+                .map(this::getDataDto)
+                .toList();
+    }
+
+    @Override
+    public String assignCheckerToData(String idData, String idChecker) {
+        Data data = getById(idData);
+        data.setIdChecker(idChecker);
+        dataRepository.save(data);
+        log.info("success in company");
+        return "OK";
+//        return getDataDto(dataRepository.save(data));
     }
 }

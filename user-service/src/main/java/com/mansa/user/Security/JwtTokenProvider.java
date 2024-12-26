@@ -112,7 +112,7 @@ public class JwtTokenProvider {
     }
 
     private boolean isTokenExpired(String token) throws Exception {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token)!=null && extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) throws Exception {
@@ -128,12 +128,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateInvitationVerificationToken(String id,String type){
+    public String generateInvitationVerificationToken(String id,String type,String idData,String email,User user) throws Exception {
+        Map<String, Object> claims = new HashMap<>();
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getRole)
+                .collect(Collectors.toSet());
+        claims.put("role", roles);
         return Jwts.builder()
-                .setSubject(id)
+                .setClaims(claims)
+                .setSubject(email)
+                .claim("idInvitation",id)
                 .claim("type",type)
+                .claim("idData",idData)
                 .setIssuedAt(new Date())
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .signWith(keyLoader.loadPrivateKey(privateKeyPath), SignatureAlgorithm.RS256)
                 .compact();
     }
 

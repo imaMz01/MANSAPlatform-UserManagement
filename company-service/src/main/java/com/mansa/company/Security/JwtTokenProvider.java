@@ -61,7 +61,7 @@ public class JwtTokenProvider {
     }
 
     private boolean isTokenExpired(String token) throws Exception {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token)!=null && extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) throws Exception {

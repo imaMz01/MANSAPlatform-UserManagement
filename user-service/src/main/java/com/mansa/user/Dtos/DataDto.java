@@ -1,7 +1,5 @@
-package com.mansa.company.Dtos;
+package com.mansa.user.Dtos;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mansa.company.Entities.Company;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,7 +17,6 @@ public class DataDto {
     @NotNull(message = "Description should be not null")
     @NotEmpty(message = "Description should be not empty")
     private String description;
-    private CompanyDto company;
     private UserDto maker;
     private UserDto checker;
     private UserDto publisher;

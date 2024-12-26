@@ -65,3 +65,23 @@ logging:
       Custom:
         Annotation:
           Aspect: DEBUG
+resilience4j:
+  retry:
+    instances:
+      assignCheckerRetry:
+        maxAttempts: 3
+        waitDuration: 5s
+  circuitbreaker:
+    instances:
+      assignCheckerCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  timelimiter:
+    instances:
+      assignCheckerTimeout:
+        timeoutDuration: 3s

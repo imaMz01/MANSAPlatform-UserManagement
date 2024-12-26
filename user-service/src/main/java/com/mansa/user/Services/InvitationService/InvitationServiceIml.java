@@ -1,17 +1,17 @@
 package com.mansa.user.Services.InvitationService;
 
-import com.mansa.user.Dtos.InvitationDto;
-import com.mansa.user.Dtos.SignInRequest;
-import com.mansa.user.Dtos.UserDto;
-import com.mansa.user.Dtos.VerificationRequest;
+import com.mansa.user.Dtos.*;
 import com.mansa.user.Entities.Invitation;
+import com.mansa.user.Entities.User;
 import com.mansa.user.Enums.InvitationType;
 import com.mansa.user.Exceptions.*;
+import com.mansa.user.FeignClient.DataFeign.DataFeign;
 import com.mansa.user.Mappers.InvitationMapper;
 import com.mansa.user.Mappers.UserMapper;
 import com.mansa.user.Repositories.InvitationRepository;
 import com.mansa.user.Security.JwtTokenProvider;
 import com.mansa.user.Services.UserService.UserService;
+import com.mansa.user.Util.KeyLoader;
 import com.mansa.user.Util.Statics;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,32 +39,44 @@ public class InvitationServiceIml implements InvitationService{
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
+    private final DataFeign dataFeign;
+    private final KeyLoader keyLoader;
     @Value("${token.signing.key}")
     private String secretKey;
+    @Value("${token.signing.public-key}")
+    private String publicKeyPath;
+
 
     @Override
     @Transactional
-    public InvitationDto sendInvitation(InvitationDto invitationDto, InvitationType type) {
+    public InvitationDto sendInvitation(InvitationDto invitationDto, String idData) throws Exception {
         Invitation invitation = mapper.toEntity(invitationDto);
-        if(type.equals(InvitationType.ADMIN_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+        User user =userService.userByEmail(invitation.getEmail());
+        if(invitation.getType().equals(InvitationType.CHECKER_INVITATION)) {
+            DataDto dataDto = dataFeign.dataById(idData).getBody();
+            if (dataDto!=null && dataDto.getMaker().getId().equals(user.getId()))
+                throw new CheckerAndMakerAreIdenticalException();
+        }
+        if(invitation.getType().equals(InvitationType.ADMIN_INVITATION) && userService.checkEmail(invitation.getEmail()) && user.getRoles().stream().anyMatch(
                 role1 -> role1.getRole().equals(Statics.ADMIN_ROLE)
         ))
             throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.ADMIN_ROLE);
-        if(type.equals(InvitationType.MAKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
+        if(invitation.getType().equals(InvitationType.MAKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && user.getRoles().stream().anyMatch(
                 role1 -> role1.getRole().equals(Statics.MAKER_ROLE)
         ))
             throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.MAKER_ROLE);
 
-        if(type.equals(InvitationType.CHECKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && userService.userByEmail(invitation.getEmail()).getRoles().stream().anyMatch(
-                role1 -> role1.getRole().equals(Statics.CHECKER_ROLE)
-        ))
-            throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.CHECKER_ROLE);
+//        if(invitation.getType().equals(InvitationType.CHECKER_INVITATION) && userService.checkEmail(invitation.getEmail()) && user.getRoles().stream().anyMatch(
+//                role1 -> role1.getRole().equals(Statics.CHECKER_ROLE)
+//        ))
+//            throw new UserHasAlreadyThisRoleExistException(userService.userByEmail(invitation.getEmail()).getId(),Statics.CHECKER_ROLE);
 
         invitation.setId(UUID.randomUUID().toString());
         invitation.setInvitedBy(userMapper.toEntity(userService.getCurrentUser()));
-        invitation.setType(type);
+        invitation.setType(invitation.getType());
         InvitationDto invitationSaved = mapper.toDto(invitationRepository.save(invitation));
-        this.generateInvitationVerificationTokenAndSendEmail(invitationSaved.getId(),invitationSaved.getEmail(),invitationSaved.getType().toString());
+        log.info("email --->{}",invitationSaved.getEmail());
+        this.generateInvitationVerificationTokenAndSendEmail(invitationSaved.getId(),invitationSaved.getEmail(),invitationSaved.getType().toString(),idData,user);
         return invitationSaved;
     }
 
@@ -87,12 +101,14 @@ public class InvitationServiceIml implements InvitationService{
     public String verifyInvitation(String token) {
         try {
             log.info("token : {}",token );
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+            Claims claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(keyLoader.loadPublicKey(publicKeyPath))
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            String id = claims.getSubject();
+            String id = claims.get("idInvitation", String.class);
             Invitation invitation = getById(id);
             log.info("invitation : {}",invitation.toString());
             if(invitation.isAccepted()){
@@ -120,12 +136,14 @@ public class InvitationServiceIml implements InvitationService{
     @Transactional
     public ModelAndView verifyInvit(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+            Claims claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(keyLoader.loadPublicKey(publicKeyPath))
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            String idAdminInvitation = claims.getSubject();
+            String idAdminInvitation = claims.get("idInvitation", String.class);
             log.info(idAdminInvitation);
 
             Invitation invitation = getById(idAdminInvitation);
@@ -158,12 +176,14 @@ public class InvitationServiceIml implements InvitationService{
     @Override
     public String verify(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+            Claims claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(keyLoader.loadPublicKey(publicKeyPath))
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
             String type = claims.get("type",String.class);
-            String id = claims.getSubject();
+            String id = claims.get("idInvitation", String.class);
             Invitation invitation = getById(id);
             log.info("invitation : {}",invitation.toString());
             if(invitation.isAccepted()){
@@ -172,19 +192,39 @@ public class InvitationServiceIml implements InvitationService{
             if (userService.checkEmail(invitation.getEmail())) {
                 UserDto user = userMapper.toDto(userService.userByEmail(invitation.getEmail()));
                 if(type.equals(InvitationType.MAKER_INVITATION.toString())) {
+                    invitation.setAccepted(true);
+                    invitationRepository.save(invitation);
                     userService.addAuthority(user.getId(), Statics.MAKER_ROLE);
                     return "You're a maker now";
                 }
                 else if(type.equals(InvitationType.CHECKER_INVITATION.toString())) {
-                    userService.addAuthority(user.getId(), Statics.CHECKER_ROLE);
-                    return "You're a checker now";
+                    log.info("process : assigning");
+                    ResponseEntity<String> response = dataFeign.assignCheckerToData(claims.get("idData",String.class), user.getId(),"Bearer "+token);
+                    if (response.getStatusCode().equals(HttpStatus.OK)) {
+                        log.info("process : assigning with success");
+                        invitation.setAccepted(true);
+                        invitationRepository.save(invitation);
+                        userService.addAuthority(user.getId(), Statics.CHECKER_ROLE);
+                        log.info("process : success");
+                        return "You're a checker now";
+                    }
+                    return "Error";
                 }
             }
             } catch (Exception e) {
-            log.info("error : {}",e.getMessage());
-            throw new RuntimeException(e.getMessage());
+                log.info("error : {}",e.getMessage());
+                throw new RuntimeException(e.getMessage());
         }
         return "Error verifying invitation";
+    }
+
+    @Override
+    public String assign(String idData, String idUser, String token) {
+        ResponseEntity<String> response = dataFeign.assignCheckerToData(idData,idUser,"Bearer "+token);
+        if(response.getStatusCode().equals(HttpStatus.OK)){
+            return "OK";
+        }
+        return "Error";
     }
 
     @Override
@@ -194,9 +234,11 @@ public class InvitationServiceIml implements InvitationService{
         ));
     }
 
+
+
     @Override
-    public void generateInvitationVerificationTokenAndSendEmail(String id,String email,String type) {
-        String token = jwtTokenProvider.generateInvitationVerificationToken(id,type);
+    public void generateInvitationVerificationTokenAndSendEmail(String id,String email,String type,String idData,User user) throws Exception {
+        String token = jwtTokenProvider.generateInvitationVerificationToken(id,type,idData,email,user);
         VerificationRequest request = new VerificationRequest("",email,token,type);
         streamBridge.send("VerificationAdminInvitation-topic",request);
     }

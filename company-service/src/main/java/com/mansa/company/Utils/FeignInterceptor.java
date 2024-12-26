@@ -33,8 +33,10 @@ public class FeignInterceptor implements RequestInterceptor {
                 template.header("X-Forwarded-For", xForwardedFor);
             } else {
                 // Si l'en-tête X-Forwarded-For est manquant
+//                xForwardedFor="41.141.135.113";
                 System.out.println("X-Forwarded-For header is missing.");
             }
+
         }
     }
 }

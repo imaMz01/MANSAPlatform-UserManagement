@@ -31,16 +31,16 @@ public class InvitationController {
 
     @RequestLogger(action = "invite admin")
     @PreAuthorize("hasRole(@Statics.ADMIN_ROLE)")
-    @PostMapping("/admin/invite")
-    public ResponseEntity<InvitationDto> inviteAdmin(@Valid @RequestBody InvitationDto invitationDto){
-        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto, InvitationType.ADMIN_INVITATION), HttpStatus.CREATED);
+    @PostMapping("/admin/invite/{idData}")
+    public ResponseEntity<InvitationDto> inviteAdmin(@Valid @RequestBody InvitationDto invitationDto,@PathVariable String idData) throws Exception {
+        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto,idData), HttpStatus.CREATED);
     }
 
     @RequestLogger(action = "invite maker or checker")
     @PreAuthorize("hasRole(@Statics.DEFAULT_ROLE) or hasRole(@Statics.SUBSCRIBER_ROLE)")
-    @PostMapping("/invite/{type}")
-    public ResponseEntity<InvitationDto> inviteMakerOrChecker(@Valid @RequestBody InvitationDto invitationDto,@PathVariable InvitationType type){
-        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto, type), HttpStatus.CREATED);
+    @PostMapping("/invite/{idData}")
+    public ResponseEntity<InvitationDto> inviteMakerOrChecker(@Valid @RequestBody InvitationDto invitationDto,@PathVariable String idData) throws Exception {
+        return new ResponseEntity<>(invitationService.sendInvitation(invitationDto,idData), HttpStatus.CREATED);
     }
 
 //    @PostMapping("/checker/invite")
@@ -56,6 +56,11 @@ public class InvitationController {
     @GetMapping("/invite/verify/{token}")
     public ResponseEntity<String> verifyMakerOrCheckerInvitation(@PathVariable String token){
         return new ResponseEntity<>(invitationService.verify(token),HttpStatus.OK);
+    }
+
+    @GetMapping("/assign/{idData}/{idChecker}/{token}")
+    public ResponseEntity<String> verifyMakerOrCheckerInvitation(@PathVariable String idData,@PathVariable String idChecker,@PathVariable String token){
+        return new ResponseEntity<>(invitationService.assign(idData,idChecker,token),HttpStatus.OK);
     }
 
 //    @GetMapping("/admin/invite/verify/{token}")

@@ -1,4 +1,4 @@
-package com.mansa.user.FeignClient;
+package com.mansa.user.FeignClient.SubscriptionFeign;
 
 import com.mansa.user.Dtos.SubscriptionDto;
 import org.springframework.cloud.openfeign.FeignClient;
